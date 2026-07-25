@@ -4,6 +4,9 @@
 
 Рекомендуемый путь: **Docker Compose + Caddy** (HTTPS). Ниже также вариант без Docker.
 
+> **Пока без VPS:** публичная статика на GitHub Pages — https://medflygg.github.io/YYSite/  
+> Полный SSR/CMS-код лежит в ветке **`vps`** (бэкап). Локально: `npm run build:pages`.
+
 ---
 
 ## Что нужно сохранить (критично)
