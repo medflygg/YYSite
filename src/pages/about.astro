@@ -1,22 +1,20 @@
 ---
-import { getEntry, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSitePage, renderMarkdown } from '../lib/content';
 
-const entry = await getEntry('site', 'about');
-if (!entry) {
-  throw new Error('Missing content: src/content/site/about.md');
+const page = await getSitePage('about');
+if (!page) {
+  throw new Error('Missing site page: about (run npm run db:seed)');
 }
-const { Content } = await render(entry);
+const html = renderMarkdown(page.body);
 ---
 
-<BaseLayout title={entry.data.title}>
+<BaseLayout title={page.title}>
   <section class="mx-auto flex min-h-[calc(100svh-var(--header-height))] max-w-[720px] flex-col justify-center px-6 py-20">
     <h1 class="mb-8 text-[clamp(40px,6vw,72px)] lowercase leading-none">
-      {entry.data.title}
+      {page.title}
     </h1>
-    <div class="prose-yy text-[18px] leading-[1.45]">
-      <Content />
-    </div>
+    <div class="prose-yy text-[18px] leading-[1.45]" set:html={html} />
   </section>
   <div class="h-40 bg-black/90" aria-hidden="true"></div>
 </BaseLayout>

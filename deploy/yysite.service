@@ -1,0 +1,15 @@
+[Unit]
+Description=YYSite (Astro SSR)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/yysite
+EnvironmentFile=/var/www/yysite/.env
+ExecStart=/usr/bin/node ./dist/server/entry.mjs
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

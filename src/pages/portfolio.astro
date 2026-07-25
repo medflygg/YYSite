@@ -1,10 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import { withBase } from '../lib/paths';
-
-const projects = await getCollection('projects');
+import { listProjectsByCategory } from '../lib/content';
 
 const sections = [
   {
@@ -27,22 +25,28 @@ const sections = [
   },
 ];
 
-function cardsFor(category: 'books' | 'magazines' | 'other') {
-  return projects
-    .filter((p) => p.data.category === category)
-    .map((p) => ({
-      id: p.id,
-      title: p.data.title,
-      href: withBase(`/projects/${p.id}`),
-      cover: withBase(p.data.cover),
-      caption: p.data.caption ?? `${p.data.title}\n${p.data.client ?? ''}`,
-    }));
+async function cardsFor(category: 'books' | 'magazines' | 'other') {
+  const items = await listProjectsByCategory(category);
+  return items.map((p) => ({
+    id: p.slug,
+    title: p.title,
+    href: withBase(`/projects/${p.slug}`),
+    cover: withBase(p.cover),
+    caption: p.caption ?? `${p.title}\n${p.client ?? ''}`,
+  }));
 }
+
+const sectionCards = await Promise.all(
+  sections.map(async (section) => ({
+    ...section,
+    cards: await cardsFor(section.category),
+  })),
+);
 ---
 
 <BaseLayout title="портфолио">
   {
-    sections.map((section) => (
+    sectionCards.map((section) => (
       <section id={section.id} class="scroll-mt-[var(--header-height)]">
         <div class="relative h-[min(801px,85svh)] w-full overflow-hidden bg-black">
           <img
@@ -64,7 +68,7 @@ function cardsFor(category: 'books' | 'magazines' | 'other') {
           </div>
         </div>
         <div id={`${section.id}-витрина`} class="scroll-mt-[var(--header-height)]">
-          <ProjectGrid projects={cardsFor(section.category)} />
+          <ProjectGrid projects={section.cards} />
         </div>
       </section>
     ))

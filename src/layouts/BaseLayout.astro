@@ -40,23 +40,19 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
               overflow: hidden;
               background: #f8f6f1;
               opacity: 1;
+              visibility: visible;
               pointer-events: auto;
+              transition:
+                opacity 0.65s ease-in-out,
+                visibility 0.65s ease-in-out;
             }
-            /* Пропуск intro — сразу прячем, без мигания контента */
+            #yy-intro-boot.is-out {
+              opacity: 0;
+              visibility: hidden;
+              pointer-events: none;
+            }
             html[data-yy-intro='skip'] #yy-intro-boot {
               display: none !important;
-            }
-            /* Автоскрытие даже если JS таймер не сработал (часто в Vite HMR) */
-            html[data-yy-intro='1'] #yy-intro-boot {
-              animation: yy-intro-fadeout 0.6s ease-in-out forwards;
-              animation-delay: 2.4s;
-            }
-            @keyframes yy-intro-fadeout {
-              to {
-                opacity: 0;
-                visibility: hidden;
-                pointer-events: none;
-              }
             }
           </style>
           <script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
@@ -88,25 +84,40 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
 
               document.documentElement.dataset.yyIntro = '1';
 
-              function dismiss() {
+              function removeBoot(boot) {
                 if (window.__yyIntroGone) return;
                 window.__yyIntroGone = true;
-                var boot = document.getElementById('yy-intro-boot');
-                if (boot) {
-                  boot.style.animation = 'none';
-                  boot.style.opacity = '0';
-                  boot.style.visibility = 'hidden';
-                  boot.style.pointerEvents = 'none';
-                  window.setTimeout(function () {
-                    boot.remove();
-                  }, 50);
-                }
+                if (boot) boot.remove();
                 delete document.documentElement.dataset.yyIntro;
+              }
+
+              /** Плавный fade-out, потом удаление из DOM */
+              function dismiss() {
+                var boot = document.getElementById('yy-intro-boot');
+                if (!boot || boot.classList.contains('is-out')) return;
+
+                boot.classList.add('is-out');
+
+                var done = false;
+                function finish() {
+                  if (done) return;
+                  done = true;
+                  removeBoot(boot);
+                }
+
+                boot.addEventListener(
+                  'transitionend',
+                  function (e) {
+                    if (e.propertyName === 'opacity') finish();
+                  },
+                  { once: true },
+                );
+                window.setTimeout(finish, 750);
               }
 
               window.__yyDismissIntro = dismiss;
 
-              window.setTimeout(dismiss, 3000);
+              window.setTimeout(dismiss, 2400);
 
               function bindClick() {
                 var boot = document.getElementById('yy-intro-boot');
@@ -118,9 +129,10 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
                 bindClick();
               }
 
-              // bfcache / возврат назад
               window.addEventListener('pageshow', function (e) {
-                if (e.persisted) dismiss();
+                if (!e.persisted) return;
+                var boot = document.getElementById('yy-intro-boot');
+                removeBoot(boot);
               });
             })();
           </script>

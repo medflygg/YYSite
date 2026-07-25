@@ -1,0 +1,5 @@
+# Copy to /etc/caddy/Caddyfile (or include) and replace your.domain
+your.domain {
+	encode gzip
+	reverse_proxy 127.0.0.1:4321
+}

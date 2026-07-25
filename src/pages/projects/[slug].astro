@@ -1,55 +1,64 @@
 ---
-import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectGallery from '../../components/ProjectGallery';
+import {
+  getProjectBySlug,
+  listProjects,
+  renderMarkdown,
+} from '../../lib/content';
+
+/** Static on GitHub Pages; SSR on VPS when STATIC_EXPORT is unset. */
+export const prerender = import.meta.env.STATIC_EXPORT === 'true';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.map((project) => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+  const all = await listProjects();
+  return all.map((p) => ({ params: { slug: p.slug } }));
 }
 
-const { project } = Astro.props;
-const { Content } = await render(project);
-const data = project.data;
+const { slug } = Astro.params;
+if (!slug) {
+  return Astro.redirect('/portfolio');
+}
+
+const project = await getProjectBySlug(slug);
+if (!project) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
 const gallery =
-  data.gallery.length > 0 ? data.gallery : [data.cover].filter(Boolean);
+  project.gallery.length > 0 ? project.gallery : [project.cover].filter(Boolean);
+const bodyHtml = renderMarkdown(project.body);
 ---
 
-<BaseLayout title={data.title} description={data.summary}>
+<BaseLayout title={project.title} description={project.summary}>
   <article class="mx-auto max-w-[1440px] px-5 pb-16 pt-8 md:px-20">
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,331px)] lg:gap-12">
       <div>
-        <ProjectGallery client:load images={gallery} alt={data.title} />
+        <ProjectGallery client:load images={gallery} alt={project.title} />
 
-        {/* Мета под картинкой: формат по правому краю изображения */}
         <footer
           class="mt-4 grid grid-cols-[1fr_auto_1fr] items-start gap-2 text-[15px] leading-[20px]"
         >
-          <span class="min-w-0">{data.client}</span>
-          <span class="text-center">{data.year}</span>
-          <span class="min-w-0 text-right">{data.specs}</span>
+          <span class="min-w-0">{project.client}</span>
+          <span class="text-center">{project.year}</span>
+          <span class="min-w-0 text-right">{project.specs}</span>
         </footer>
       </div>
 
       <aside class="lg:pt-0">
         <h1 class="mb-6 text-[clamp(32px,4vw,49px)] lowercase leading-[1.1]">
-          {data.title}
+          {project.title}
         </h1>
-        <div class="prose-yy mb-8 text-[15px] leading-[20px]">
-          <Content />
-        </div>
+        <div class="prose-yy mb-8 text-[15px] leading-[20px]" set:html={bodyHtml} />
 
         {
-          data.behindTheScenes.length > 0 && (
+          project.behindTheScenes.length > 0 && (
             <>
               <hr class="my-6 border-black/80" />
               <div class="text-[15px] leading-[20px]">
                 <p class="mb-1 underline underline-offset-2">что осталось за кадром:</p>
                 <ul>
-                  {data.behindTheScenes.map((item) => (
+                  {project.behindTheScenes.map((item) => (
                     <li>– {item}{item.endsWith(';') || item.endsWith('.') ? '' : ';'}</li>
                   ))}
                 </ul>
@@ -59,13 +68,13 @@ const gallery =
         }
 
         {
-          data.whatHappenedNext.length > 0 && (
+          project.whatHappenedNext.length > 0 && (
             <>
               <hr class="my-6 border-black/80" />
               <div class="text-[15px] leading-[20px]">
                 <p class="mb-1 underline underline-offset-2">что было дальше:</p>
                 <ul>
-                  {data.whatHappenedNext.map((item) => (
+                  {project.whatHappenedNext.map((item) => (
                     <li>– {item}</li>
                   ))}
                 </ul>

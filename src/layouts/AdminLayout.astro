@@ -1,0 +1,22 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'админка' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{title} — YY admin</title>
+  </head>
+  <body class="min-h-screen bg-yy-cream text-yy-black antialiased">
+    <slot />
+  </body>
+</html>

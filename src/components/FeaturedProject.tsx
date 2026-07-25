@@ -64,7 +64,13 @@ export default function FeaturedProject({
           )}
           <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 opacity-40">
             <span className="lowercase text-[15px]">смотрим</span>
-            <img src={withBase('/icons/arrow-right-sm.svg')} alt="" className="h-4 w-8" />
+            <span className="inline-flex h-4 w-8 items-center justify-center">
+              <img
+                src={withBase('/icons/arrow-right-sm.svg')}
+                alt=""
+                className="h-8 w-4 -rotate-90"
+              />
+            </span>
           </div>
         </div>
       </div>

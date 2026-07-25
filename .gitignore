@@ -12,10 +12,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
 # environment variables
 .env
 .env.production
+
+# database
+data/*.db
+data/*.db-*
+
+# uploads (keep folder)
+public/uploads/*
+!public/uploads/.gitkeep
 
 # macOS-specific files
 .DS_Store
@@ -27,3 +34,10 @@ pnpm-debug.log*
 tmp-ref/
 playwright-report/
 test-results/
+
+# local / server backups
+backups/
+
+# temp dirs for GitHub Pages static export
+.pages-build-stash/
+.pages-build/

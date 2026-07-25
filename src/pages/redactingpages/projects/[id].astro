@@ -1,0 +1,13 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProjectForm from '../../../components/admin/ProjectForm';
+
+const id = Number(Astro.params.id);
+if (!id) {
+  return Astro.redirect('/redactingpages/projects');
+}
+---
+
+<AdminLayout title="проект">
+  <ProjectForm client:load projectId={id} />
+</AdminLayout>

@@ -1,0 +1,14 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import LoginForm from '../../components/admin/LoginForm';
+import { isAuthenticated, readSessionId } from '../../lib/auth';
+
+const sessionId = readSessionId(Astro.request.headers.get('cookie'));
+if (await isAuthenticated(sessionId)) {
+  return Astro.redirect('/redactingpages');
+}
+---
+
+<AdminLayout title="вход">
+  <LoginForm client:load />
+</AdminLayout>

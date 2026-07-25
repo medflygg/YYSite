@@ -1,13 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FeaturedProject from '../components/FeaturedProject';
 import { withBase } from '../lib/paths';
+import { listFeaturedProjects } from '../lib/content';
 
-const projects = await getCollection('projects');
-const featured = projects
-  .filter((p) => p.data.featured)
-  .sort((a, b) => (a.data.featuredOrder ?? 99) - (b.data.featuredOrder ?? 99));
+const featured = await listFeaturedProjects();
 ---
 
 <BaseLayout title="YY" showIntro={true}>
@@ -40,13 +37,13 @@ const featured = projects
     {
       featured.map((project) => (
         <FeaturedProject
-          title={project.data.title}
-          summary={project.data.summary}
-          href={`/projects/${project.id}`}
-          cover={project.data.cover}
-          cardImage={project.data.cardImage}
-          layout={project.data.featuredLayout}
-          awards={project.data.awards}
+          title={project.title}
+          summary={project.summary}
+          href={`/projects/${project.slug}`}
+          cover={project.cover}
+          cardImage={project.cardImage ?? undefined}
+          layout={project.featuredLayout}
+          awards={project.awards}
         />
       ))
     }

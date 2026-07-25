@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProjectsList from '../../../components/admin/ProjectsList';
+---
+
+<AdminLayout title="проекты">
+  <ProjectsList client:load />
+</AdminLayout>
