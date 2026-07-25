@@ -31,7 +31,7 @@ export default function FeaturedProject({
     >
       {/* Слот жёлтого блока: картинка по умолчанию, жёлтый — только при hover на этот слот */}
       <div
-        className={`group/panel relative min-h-[420px] overflow-hidden md:min-h-[560px] ${
+        className={`featured-panel relative min-h-[420px] overflow-hidden md:min-h-[560px] ${
           yellowFirst ? 'md:order-1' : 'md:order-2'
         }`}
       >
@@ -42,7 +42,7 @@ export default function FeaturedProject({
         />
 
         <div
-          className="absolute inset-0 flex flex-col bg-yy-yellow p-7 opacity-0 transition-opacity duration-300 group-hover/panel:opacity-100 md:p-8"
+          className="featured-panel-overlay absolute inset-0 flex flex-col bg-yy-yellow p-7 opacity-0 transition-opacity duration-300 md:p-8"
         >
           <h2 className="mb-6 max-w-[373px] text-[clamp(32px,4.5vw,55px)] lowercase leading-[1.1]">
             {title}

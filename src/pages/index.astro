@@ -58,7 +58,13 @@ const featured = projects
         class="flex items-center gap-3 opacity-40 transition-opacity hover:opacity-100"
       >
         <span class="lowercase text-[15px]">смотрим все</span>
-        <img src={withBase('/icons/arrow-right.svg')} alt="" class="h-6 w-11" />
+        <span class="inline-flex h-6 w-11 items-center justify-center">
+          <img
+            src={withBase('/icons/arrow-down.svg')}
+            alt=""
+            class="h-11 w-6 -rotate-90"
+          />
+        </span>
       </a>
     </div>
   </section>

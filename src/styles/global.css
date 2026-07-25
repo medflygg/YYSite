@@ -30,6 +30,30 @@ body {
   color: black;
 }
 
+/* Intro: заголовок стартует до гидрации React */
+@keyframes yy-intro-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.yy-intro-title {
+  opacity: 0;
+  animation: yy-intro-title-in 0.7s ease forwards 0.25s;
+}
+
+/* Featured cards: жёлтый слой только на устройствах с настоящим hover (не touch) */
+@media (hover: hover) and (pointer: fine) {
+  .featured-panel:hover .featured-panel-overlay {
+    opacity: 1;
+  }
+}
+
 .prose-yy p {
   margin: 0 0 0.75rem;
   line-height: 1.35;
