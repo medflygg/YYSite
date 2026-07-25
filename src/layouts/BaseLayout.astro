@@ -34,10 +34,29 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
         <>
           <style is:inline>
             #yy-intro-boot {
-              display: none;
+              position: fixed;
+              inset: 0;
+              z-index: 10000;
+              overflow: hidden;
+              background: #f8f6f1;
+              opacity: 1;
+              pointer-events: auto;
             }
+            /* Пропуск intro — сразу прячем, без мигания контента */
+            html[data-yy-intro='skip'] #yy-intro-boot {
+              display: none !important;
+            }
+            /* Автоскрытие даже если JS таймер не сработал (часто в Vite HMR) */
             html[data-yy-intro='1'] #yy-intro-boot {
-              display: block;
+              animation: yy-intro-fadeout 0.6s ease-in-out forwards;
+              animation-delay: 2.4s;
+            }
+            @keyframes yy-intro-fadeout {
+              to {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+              }
             }
           </style>
           <script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
@@ -61,40 +80,48 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
                   return true;
                 }
               }
-              if (!shouldPlay()) return;
+
+              if (!shouldPlay()) {
+                document.documentElement.dataset.yyIntro = 'skip';
+                return;
+              }
 
               document.documentElement.dataset.yyIntro = '1';
 
-              window.__yyDismissIntro = function () {
+              function dismiss() {
                 if (window.__yyIntroGone) return;
                 window.__yyIntroGone = true;
                 var boot = document.getElementById('yy-intro-boot');
-                if (!boot) {
-                  delete document.documentElement.dataset.yyIntro;
-                  return;
+                if (boot) {
+                  boot.style.animation = 'none';
+                  boot.style.opacity = '0';
+                  boot.style.visibility = 'hidden';
+                  boot.style.pointerEvents = 'none';
+                  window.setTimeout(function () {
+                    boot.remove();
+                  }, 50);
                 }
-                boot.style.transition = 'opacity 0.6s ease-in-out';
-                boot.style.opacity = '0';
-                window.setTimeout(function () {
-                  boot.remove();
-                  delete document.documentElement.dataset.yyIntro;
-                }, 600);
-              };
+                delete document.documentElement.dataset.yyIntro;
+              }
 
-              window.setTimeout(function () {
-                if (typeof window.__yyDismissIntro === 'function') {
-                  window.__yyDismissIntro();
-                }
-              }, 2400);
+              window.__yyDismissIntro = dismiss;
 
-              document.addEventListener(
-                'DOMContentLoaded',
-                function () {
-                  var boot = document.getElementById('yy-intro-boot');
-                  if (boot) boot.addEventListener('click', window.__yyDismissIntro);
-                },
-                { once: true },
-              );
+              window.setTimeout(dismiss, 3000);
+
+              function bindClick() {
+                var boot = document.getElementById('yy-intro-boot');
+                if (boot) boot.addEventListener('click', dismiss, { once: true });
+              }
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bindClick, { once: true });
+              } else {
+                bindClick();
+              }
+
+              // bfcache / возврат назад
+              window.addEventListener('pageshow', function (e) {
+                if (e.persisted) dismiss();
+              });
             })();
           </script>
         </>
@@ -104,42 +131,35 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
   <body class="min-h-screen bg-yy-cream text-yy-black antialiased">
     {
       showIntro && (
-        <>
-          {/* Оверлей до гидрации React — иначе мелькает главная */}
-          <div
-            id="yy-intro-boot"
-            class="fixed inset-0 z-[10000] overflow-hidden bg-yy-cream"
-            aria-hidden="true"
-          >
-            <img
-              src={withBase('/images/loader-vector-1.svg')}
-              alt=""
-              class="pointer-events-none absolute -left-10 top-0 h-[140%] w-auto max-w-none opacity-90"
-            />
-            <img
-              src={withBase('/images/loader-vector-2.svg')}
-              alt=""
-              class="pointer-events-none absolute -right-4 -top-10 h-[130%] w-auto max-w-none opacity-90"
-            />
-            <div class="relative z-10 flex h-full flex-col pt-[var(--header-height)]">
-              <div
-                class="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6 pt-16 pb-28 text-center"
+        <div id="yy-intro-boot" aria-hidden="true">
+          <img
+            src={withBase('/images/loader-vector-1.svg')}
+            alt=""
+            class="pointer-events-none absolute -left-10 top-0 h-[140%] w-auto max-w-none opacity-90"
+          />
+          <img
+            src={withBase('/images/loader-vector-2.svg')}
+            alt=""
+            class="pointer-events-none absolute -right-4 -top-10 h-[130%] w-auto max-w-none opacity-90"
+          />
+          <div class="relative z-10 flex h-full flex-col pt-[var(--header-height)]">
+            <div
+              class="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6 pt-16 pb-28 text-center"
+            >
+              <h1
+                class="yy-intro-title max-w-[520px] text-[clamp(36px,5vw,51px)] lowercase leading-[1.08] text-black"
               >
-                <h1
-                  class="yy-intro-title max-w-[520px] text-[clamp(36px,5vw,51px)] lowercase leading-[1.08] text-black"
-                >
-                  Сначала форма,<br />Потом полка.
-                </h1>
-                <p
-                  class="invisible mt-6 max-w-[405px] text-[15px] leading-[20px] lowercase"
-                  aria-hidden="true"
-                >
-                  Проектирую книги, журналы<br />и визуальные системы
-                </p>
-              </div>
+                Сначала форма,<br />Потом полка.
+              </h1>
+              <p
+                class="invisible mt-6 max-w-[405px] text-[15px] leading-[20px] lowercase"
+                aria-hidden="true"
+              >
+                Проектирую книги, журналы<br />и визуальные системы
+              </p>
             </div>
           </div>
-        </>
+        </div>
       )
     }
     <Header />

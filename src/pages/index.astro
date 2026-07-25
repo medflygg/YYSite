@@ -40,7 +40,6 @@ const featured = projects
     {
       featured.map((project) => (
         <FeaturedProject
-          client:visible
           title={project.data.title}
           summary={project.data.summary}
           href={`/projects/${project.id}`}
