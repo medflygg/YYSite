@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import IntroLoader from '../components/IntroLoader';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  title?: string;
+  description?: string;
+  showIntro?: boolean;
+}
+
+const {
+  title = 'YY',
+  description = 'Проектирую книги, журналы и визуальные системы',
+  showIntro = false,
+} = Astro.props;
+
+const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — YY`;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="min-h-screen bg-yy-cream text-yy-black antialiased">
+    {showIntro && <IntroLoader client:load />}
+    <Header />
+    <main class="relative">
+      <slot />
+    </main>
+  </body>
+</html>

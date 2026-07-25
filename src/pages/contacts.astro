@@ -1,0 +1,21 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const entry = await getEntry('site', 'contacts');
+if (!entry) {
+  throw new Error('Missing content: src/content/site/contacts.md');
+}
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title}>
+  <section class="mx-auto flex min-h-[calc(100svh-var(--header-height))] max-w-[720px] flex-col justify-center px-6 py-20">
+    <h1 class="mb-8 text-[clamp(40px,6vw,72px)] lowercase leading-none">
+      {entry.data.title}
+    </h1>
+    <div class="prose-yy text-[18px] leading-[1.45]">
+      <Content />
+    </div>
+  </section>
+</BaseLayout>

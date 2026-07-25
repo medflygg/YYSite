@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { withBase } from '../lib/paths';
+
+const projects = await getCollection('projects');
+
+const sections = [
+  {
+    id: 'книги',
+    label: 'книги',
+    category: 'books' as const,
+    hero: '/portfolio/books-hero.jpg',
+  },
+  {
+    id: 'журналы',
+    label: 'журналы',
+    category: 'magazines' as const,
+    hero: '/portfolio/magazines-hero.jpg',
+  },
+  {
+    id: 'другое',
+    label: 'другое',
+    category: 'other' as const,
+    hero: '/portfolio/other-hero.jpg',
+  },
+];
+
+function cardsFor(category: 'books' | 'magazines' | 'other') {
+  return projects
+    .filter((p) => p.data.category === category)
+    .map((p) => ({
+      id: p.id,
+      title: p.data.title,
+      href: withBase(`/projects/${p.id}`),
+      cover: withBase(p.data.cover),
+      caption: p.data.caption ?? `${p.data.title}\n${p.data.client ?? ''}`,
+    }));
+}
+---
+
+<BaseLayout title="портфолио">
+  {
+    sections.map((section) => (
+      <section id={section.id} class="scroll-mt-[var(--header-height)]">
+        <div class="relative h-[min(801px,85svh)] w-full overflow-hidden bg-black">
+          <img
+            src={withBase(section.hero)}
+            alt=""
+            class="absolute inset-0 h-full w-full object-cover object-bottom"
+          />
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <h1 class="text-[clamp(56px,10vw,102px)] lowercase leading-none text-white">
+              {section.label}
+            </h1>
+            <a
+              href={`#${section.id}-витрина`}
+              class="mt-4 opacity-90 transition-opacity hover:opacity-100"
+              aria-label={`К витрине: ${section.label}`}
+            >
+              <img src={withBase('/icons/arrow-down.svg')} alt="" class="h-11 w-6" />
+            </a>
+          </div>
+        </div>
+        <div id={`${section.id}-витрина`} class="scroll-mt-[var(--header-height)]">
+          <ProjectGrid projects={cardsFor(section.category)} />
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>

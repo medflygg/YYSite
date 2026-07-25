@@ -1,0 +1,152 @@
+---
+import MobileMenu from './MobileMenu';
+import { withBase } from '../lib/paths';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+const path = pathname.startsWith(base) ? pathname.slice(base.length) || '/' : pathname;
+
+const portfolioLinks = [
+  { href: withBase('/portfolio#книги'), label: 'книги' },
+  { href: withBase('/portfolio#журналы'), label: 'журналы' },
+  { href: withBase('/portfolio#другое'), label: 'другое' },
+];
+
+function isActive(href: string) {
+  if (href === '/portfolio') {
+    return path === '/portfolio' || path.startsWith('/projects');
+  }
+  if (href.startsWith('/portfolio#')) {
+    return path === '/portfolio';
+  }
+  return path === href;
+}
+
+const aboutExpanded = path === '/about' || path === '/contacts';
+const portfolioExpanded = path === '/portfolio' || path.startsWith('/projects');
+
+const linkBase =
+  'lowercase text-[13px] md:text-[15px] leading-[20px] transition-colors whitespace-nowrap';
+---
+
+<header class="sticky top-0 z-50 h-[var(--header-height)] w-full bg-yy-yellow">
+  <div
+    class="mx-auto flex h-full max-w-[1440px] items-center justify-between px-5 md:hidden"
+  >
+    <a
+      href={withBase('/')}
+      class="uppercase text-[15px] tracking-[0.04em] text-black"
+      aria-label="YY — на главную"
+    >
+      YY
+    </a>
+    <MobileMenu client:load pathname={path} />
+  </div>
+
+  <nav
+    class="relative mx-auto hidden h-full max-w-[1440px] items-center justify-between px-5 md:flex md:px-20"
+    aria-label="Основная навигация"
+  >
+    <div class="group/about relative flex h-full items-center">
+      <a
+        href={withBase('/about')}
+        class:list={[
+          linkBase,
+          aboutExpanded
+            ? 'text-black underline underline-offset-4'
+            : 'text-yy-muted group-hover/about:text-black',
+        ]}
+      >
+        обо мне
+      </a>
+
+      <div class="group/contacts relative flex h-full items-center">
+        <div
+          class:list={[
+            'flex h-full items-center overflow-hidden transition-[max-width,opacity,margin] duration-300 ease-out',
+            aboutExpanded
+              ? 'ml-4 max-w-[120px] opacity-100'
+              : 'ml-0 max-w-0 opacity-0 group-hover/about:ml-4 group-hover/about:max-w-[120px] group-hover/about:opacity-100 group-focus-within/about:ml-4 group-focus-within/about:max-w-[120px] group-focus-within/about:opacity-100',
+          ]}
+        >
+          <a
+            href={withBase('/contacts')}
+            class:list={[
+              linkBase,
+              isActive('/contacts')
+                ? 'text-black'
+                : 'text-yy-muted group-hover/contacts:text-black',
+            ]}
+            aria-describedby="contacts-popover"
+          >
+            контакты
+          </a>
+        </div>
+
+        <div
+          id="contacts-popover"
+          class="invisible absolute inset-y-0 left-full z-50 flex items-stretch pl-4 opacity-0 transition-[opacity,visibility] duration-200 ease-out group-hover/contacts:visible group-hover/contacts:opacity-100 group-focus-within/contacts:visible group-focus-within/contacts:opacity-100"
+          role="tooltip"
+        >
+          <div
+            class="flex h-full select-text flex-col justify-center gap-0 bg-yy-yellow text-[12px] leading-[15px] text-black"
+          >
+            <a href="mailto:YY@gmail.com" class="cursor-text whitespace-nowrap hover:underline">
+              YY@gmail.com
+            </a>
+            <a
+              href="https://t.me/yanayurasovaa"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cursor-text whitespace-nowrap hover:underline"
+            >
+              TG: @yanayurasovaa
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a
+      href={withBase('/')}
+      class="absolute left-1/2 -translate-x-1/2 uppercase text-[15px] tracking-[0.04em] text-black"
+      aria-label="YY — на главную"
+    >
+      YY
+    </a>
+
+    <div class="group/portfolio relative flex h-full items-center justify-end">
+      <div
+        class:list={[
+          'flex h-full items-center justify-end gap-5 overflow-hidden transition-[max-width,opacity,margin] duration-300 ease-out',
+          portfolioExpanded
+            ? 'mr-4 max-w-[360px] opacity-100'
+            : 'max-w-0 opacity-0 group-hover/portfolio:mr-4 group-hover/portfolio:max-w-[360px] group-hover/portfolio:opacity-100 group-focus-within/portfolio:mr-4 group-focus-within/portfolio:max-w-[360px] group-focus-within/portfolio:opacity-100',
+        ]}
+      >
+        {
+          portfolioLinks.map((link) => (
+            <a
+              href={link.href}
+              class:list={[linkBase, 'text-yy-muted hover:text-black']}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <a
+        href={withBase('/portfolio')}
+        class:list={[
+          linkBase,
+          portfolioExpanded
+            ? 'text-black underline underline-offset-4'
+            : 'text-yy-muted group-hover/portfolio:text-black',
+        ]}
+      >
+        портфолио
+      </a>
+    </div>
+  </nav>
+</header>

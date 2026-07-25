@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,400;0,8..144,500;1,8..144,400&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-yy-yellow: #ffd900;
+  --color-yy-muted: #b19600;
+  --color-yy-cream: #f8f6f1;
+  --color-yy-black: #000000;
+  --font-serif: "Roboto Serif", Georgia, serif;
+}
+
+:root {
+  --header-height: 62px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-yy-cream);
+  color: var(--color-yy-black);
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+}
+
+::selection {
+  background: var(--color-yy-yellow);
+  color: black;
+}
+
+.prose-yy p {
+  margin: 0 0 0.75rem;
+  line-height: 1.35;
+}
+
+.prose-yy a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+/* Screen-reader only (mobile menu button label) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

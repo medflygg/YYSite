@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FeaturedProject from '../components/FeaturedProject';
+import { withBase } from '../lib/paths';
+
+const projects = await getCollection('projects');
+const featured = projects
+  .filter((p) => p.data.featured)
+  .sort((a, b) => (a.data.featuredOrder ?? 99) - (b.data.featuredOrder ?? 99));
+---
+
+<BaseLayout title="YY" showIntro={true}>
+  <section class="relative min-h-[calc(100svh-var(--header-height))] overflow-hidden">
+    <img
+      src={withBase('/images/hero-books.png')}
+      alt=""
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover mix-blend-multiply"
+    />
+    <div
+      class="relative z-10 flex min-h-[calc(100svh-var(--header-height))] flex-col items-center justify-center px-6 pb-28 pt-16 text-center"
+    >
+      <h1 class="max-w-[520px] text-[clamp(36px,5vw,51px)] lowercase leading-[1.08]">
+        Сначала форма,<br />Потом полка.
+      </h1>
+      <p class="mt-6 max-w-[405px] text-[15px] leading-[20px] lowercase">
+        Проектирую книги, журналы<br />и визуальные системы
+      </p>
+      <a
+        href="#избранное"
+        class="absolute bottom-10 flex flex-col items-center gap-2 opacity-40 transition-opacity hover:opacity-100"
+      >
+        <span class="lowercase text-[15px]">избранное</span>
+        <img src={withBase('/icons/arrow-down.svg')} alt="" class="h-11 w-6" />
+      </a>
+    </div>
+  </section>
+
+  <section id="избранное" class="space-y-8 px-5 py-10 md:px-20 md:py-16">
+    {
+      featured.map((project) => (
+        <FeaturedProject
+          client:visible
+          title={project.data.title}
+          summary={project.data.summary}
+          href={`/projects/${project.id}`}
+          cover={project.data.cover}
+          cardImage={project.data.cardImage}
+          layout={project.data.featuredLayout}
+          awards={project.data.awards}
+        />
+      ))
+    }
+
+    <div class="flex justify-center pt-10 pb-16">
+      <a
+        href={withBase('/portfolio')}
+        class="flex items-center gap-3 opacity-40 transition-opacity hover:opacity-100"
+      >
+        <span class="lowercase text-[15px]">смотрим все</span>
+        <img src={withBase('/icons/arrow-right.svg')} alt="" class="h-6 w-11" />
+      </a>
+    </div>
+  </section>
+</BaseLayout>

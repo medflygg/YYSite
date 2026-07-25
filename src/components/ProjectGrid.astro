@@ -1,0 +1,36 @@
+---
+interface ProjectCard {
+  id: string;
+  title: string;
+  href: string;
+  cover: string;
+  caption: string;
+}
+
+interface Props {
+  projects: ProjectCard[];
+}
+
+const { projects } = Astro.props;
+---
+
+<div class="mx-auto grid max-w-[1280px] grid-cols-1 gap-x-6 gap-y-10 px-5 py-14 md:grid-cols-3 md:px-20">
+  {
+    projects.map((project) => (
+      <a href={project.href} class="group block">
+        <div class="aspect-[411/581] overflow-hidden bg-black">
+          {project.cover ? (
+            <img
+              src={project.cover}
+              alt={project.title}
+              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : null}
+        </div>
+        <p class="mt-4 max-w-[293px] text-[15px] leading-[21px] whitespace-pre-line">
+          {project.caption}
+        </p>
+      </a>
+    ))
+  }
+</div>
