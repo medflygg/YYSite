@@ -146,13 +146,19 @@ export async function deleteProject(id: number) {
 export async function reorderFeatured(orderedIds: number[]) {
   await migrate();
   const db = getDb();
+  const now = new Date();
+  // Сначала снимаем избранное со всех — иначе убранные из витрины остаются featured
+  await db
+    .update(projects)
+    .set({ featured: false, featuredOrder: null, updatedAt: now })
+    .where(eq(projects.featured, true));
   for (let i = 0; i < orderedIds.length; i++) {
     await db
       .update(projects)
       .set({
         featured: true,
         featuredOrder: i + 1,
-        updatedAt: new Date(),
+        updatedAt: now,
       })
       .where(eq(projects.id, orderedIds[i]));
   }

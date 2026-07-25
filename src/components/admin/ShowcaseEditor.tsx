@@ -158,6 +158,11 @@ export default function ShowcaseEditor() {
     setStatus('сохранено');
   }
 
+  async function removeFeatured(id: number) {
+    if (!data) return;
+    await saveFeatured(data.featured.filter((p) => p.id !== id));
+  }
+
   async function addProject(project: Item) {
     if (!data || !picker) return;
     if (picker.mode === 'featured') {
@@ -190,7 +195,7 @@ export default function ShowcaseEditor() {
     <AdminShell title="витрины" wide>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-5 md:px-10">
         <p className="text-[14px] opacity-50">
-          перетаскивай проекты · плюс — добавить в витрину
+          перетаскивай · плюс — добавить · убрать — снять с витрины
         </p>
         {status ? <p className="text-[13px] opacity-40">{status}</p> : null}
       </div>
@@ -223,6 +228,7 @@ export default function ShowcaseEditor() {
             void saveFeatured(reorder(data.featured, from, to))
           }
           onLayout={setLayout}
+          onRemove={(id) => void removeFeatured(id)}
           onAdd={() => setPicker({ mode: 'featured' })}
         />
       ) : (
@@ -352,11 +358,13 @@ function HomeShowcase({
   items,
   onReorder,
   onLayout,
+  onRemove,
   onAdd,
 }: {
   items: Item[];
   onReorder: (from: number, to: number) => void;
   onLayout: (id: number, layout: 'left' | 'right') => void;
+  onRemove: (id: number) => void;
   onAdd: () => void;
 }) {
   const drag = useDragReorder(onReorder);
@@ -389,6 +397,7 @@ function HomeShowcase({
               <button
                 type="button"
                 className="bg-yy-yellow px-2 py-1 text-[12px] lowercase"
+                onMouseDown={(e) => e.stopPropagation()}
                 onClick={() =>
                   onLayout(
                     project.id,
@@ -398,6 +407,23 @@ function HomeShowcase({
               >
                 layout: {project.featuredLayout}
               </button>
+              <button
+                type="button"
+                className="bg-white px-2 py-1 text-[12px] lowercase ring-1 ring-black/20"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => onRemove(project.id)}
+              >
+                убрать
+              </button>
+              <a
+                href={`/redactingpages/projects/${project.id}`}
+                className="bg-white px-2 py-1 text-[12px] lowercase ring-1 ring-black/20"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                draggable={false}
+              >
+                редактировать
+              </a>
             </div>
           </div>
         );
@@ -421,7 +447,13 @@ function FeaturedPreview({ project }: { project: Item }) {
   const awards = Array.isArray(project.awards) ? project.awards : [];
 
   return (
-    <div className="relative mx-auto grid w-full max-w-[1280px] grid-cols-1 overflow-hidden md:grid-cols-[413fr_857fr]">
+    <div
+      className={`relative mx-auto grid w-full max-w-[1280px] grid-cols-1 overflow-hidden ${
+        yellowFirst
+          ? 'md:grid-cols-[413fr_857fr]'
+          : 'md:grid-cols-[857fr_413fr]'
+      }`}
+    >
       <div
         className={`featured-panel relative min-h-[320px] overflow-hidden md:min-h-[480px] ${
           yellowFirst ? 'md:order-1' : 'md:order-2'
@@ -542,9 +574,20 @@ function PortfolioShowcase({
                   {caption}
                 </p>
               </div>
-              <span className="absolute left-2 top-2 bg-black/70 px-2 py-1 text-[12px] text-white lowercase">
-                {index + 1}
-              </span>
+              <div className="pointer-events-auto absolute left-2 top-2 z-10 flex flex-wrap gap-1">
+                <span className="bg-black/70 px-2 py-1 text-[12px] text-white lowercase">
+                  {index + 1}
+                </span>
+                <a
+                  href={`/redactingpages/projects/${project.id}`}
+                  className="bg-yy-yellow px-2 py-1 text-[12px] lowercase"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  draggable={false}
+                >
+                  редактировать
+                </a>
+              </div>
             </div>
           );
         })}

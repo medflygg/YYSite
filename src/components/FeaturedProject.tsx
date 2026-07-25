@@ -27,9 +27,13 @@ export default function FeaturedProject({
   return (
     <a
       href={withBase(href)}
-      className="relative mx-auto grid w-full max-w-[1280px] grid-cols-1 overflow-hidden md:grid-cols-[413fr_857fr]"
+      className={`relative mx-auto grid w-full max-w-[1280px] grid-cols-1 overflow-hidden ${
+        yellowFirst
+          ? 'md:grid-cols-[413fr_857fr]'
+          : 'md:grid-cols-[857fr_413fr]'
+      }`}
     >
-      {/* Слот жёлтого блока: картинка по умолчанию, жёлтый — только при hover на этот слот */}
+      {/* Узкий фрейм жёлтой карточки: слева при left, справа при right */}
       <div
         className={`featured-panel relative min-h-[420px] overflow-hidden md:min-h-[560px] ${
           yellowFirst ? 'md:order-1' : 'md:order-2'
@@ -62,11 +66,11 @@ export default function FeaturedProject({
               ))}
             </ul>
           )}
-          <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 opacity-40">
+          <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 text-black">
             <span className="lowercase text-[15px]">смотрим</span>
             <span className="inline-flex h-4 w-8 items-center justify-center">
               <img
-                src={withBase('/icons/arrow-right-sm.svg')}
+                src={withBase('/icons/arrow-right-sm-black.svg')}
                 alt=""
                 className="h-8 w-4 -rotate-90"
               />
