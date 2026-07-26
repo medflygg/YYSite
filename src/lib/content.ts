@@ -1,8 +1,15 @@
 import { asc, desc, eq } from 'drizzle-orm';
 import { marked } from 'marked';
+import type { AboutCardDTO } from './about-cards';
 import { getDb } from './db/client';
 import { migrate } from './db/migrate';
-import { projectImages, projects, sitePages, type Project } from './db/schema';
+import {
+  aboutCards,
+  projectImages,
+  projects,
+  sitePages,
+  type Project,
+} from './db/schema';
 import { typografHtml } from './typograf';
 
 let migrated = false;
@@ -86,6 +93,27 @@ export async function getSitePage(key: string) {
   const db = await ensureDb();
   const rows = await db.select().from(sitePages).where(eq(sitePages.key, key)).limit(1);
   return rows[0] ?? null;
+}
+
+export async function listAboutCards(): Promise<AboutCardDTO[]> {
+  const db = await ensureDb();
+  const rows = await db
+    .select()
+    .from(aboutCards)
+    .orderBy(asc(aboutCards.sortOrder), asc(aboutCards.id));
+  return rows.map((row) => ({
+    id: row.id,
+    num: row.num,
+    title: row.title,
+    body: row.body,
+    bg: row.bg,
+    text: row.text,
+    className: row.className,
+    z: row.z,
+    rotate: row.rotate,
+    hasCta: Boolean(row.hasCta),
+    sortOrder: row.sortOrder,
+  }));
 }
 
 export function renderMarkdown(md: string) {

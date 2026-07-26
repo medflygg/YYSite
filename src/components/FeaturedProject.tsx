@@ -33,82 +33,87 @@ export default function FeaturedProject({
     <div className="w-full">
       {/* Mobile (Figma iPhone): обложка ↔ жёлтое описание по иконкам */}
       <div className="relative mx-auto w-full max-w-[342px] md:hidden">
-        <div className="relative aspect-[342/483] w-full overflow-hidden bg-black">
-          {infoOpen ? (
-            <div className="absolute inset-0 flex flex-col bg-yy-yellow px-5 pb-6 pt-4">
-              <button
-                type="button"
-                className="absolute right-3 top-3 z-10 flex h-[29px] w-[29px] items-center justify-center"
-                aria-label="Показать обложку"
-                onClick={() => setInfoOpen(false)}
-              >
-                <img
-                  src={withBase('/icons/featured-photo.svg')}
-                  alt=""
-                  className="h-[29px] w-[29px]"
-                />
-              </button>
+        <div className="relative aspect-[342/483] w-full overflow-hidden bg-yy-yellow">
+          {/* Обложка всегда в DOM — без чёрного мига при переключении */}
+          <a
+            href={link}
+            className={`absolute inset-0 block transition-opacity duration-200 ${
+              infoOpen ? 'pointer-events-none opacity-0' : 'opacity-100'
+            }`}
+            tabIndex={infoOpen ? -1 : undefined}
+            aria-hidden={infoOpen}
+          >
+            <img
+              src={coverSrc}
+              alt={title}
+              className="h-full w-full object-cover object-center"
+            />
+          </a>
 
-              <h2 className="mb-4 max-w-[310px] pr-10 text-[clamp(28px,8vw,40px)] lowercase leading-[1.1]">
-                {typograf(title)}
-              </h2>
-              <p className="mb-6 max-w-[300px] text-[15px] leading-[20px]">
-                {typograf(summary)}
-              </p>
-              {awards.length > 0 && (
-                <ul className="mb-8 space-y-3">
-                  {awards.map((award) => (
-                    <li
-                      key={award.text}
-                      className="flex gap-3 text-[15px] leading-[20px]"
-                    >
-                      {award.place && (
-                        <span className="mt-1 shrink-0 text-[7px] uppercase tracking-wide">
-                          {award.place}
-                        </span>
-                      )}
-                      <span>{typograf(award.text)}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <a
-                href={link}
-                className="mt-auto flex items-center justify-center gap-2 text-black opacity-40 transition-opacity hover:opacity-100"
-              >
-                <span className="lowercase text-[15px]">смотрим</span>
-                <span className="inline-flex h-4 w-8 items-center justify-center">
-                  <img
-                    src={withBase('/icons/arrow-right-sm-black.svg')}
-                    alt=""
-                    className="h-8 w-4 -rotate-90"
-                  />
-                </span>
-              </a>
-            </div>
-          ) : (
-            <>
-              <a href={link} className="absolute inset-0 block">
+          <div
+            className={`absolute inset-0 flex flex-col bg-yy-yellow px-5 pb-6 pt-4 transition-opacity duration-200 ${
+              infoOpen
+                ? 'opacity-100'
+                : 'pointer-events-none opacity-0'
+            }`}
+            aria-hidden={!infoOpen}
+          >
+            <h2 className="mb-4 max-w-[310px] pr-10 text-[clamp(28px,8vw,40px)] lowercase leading-[1.1]">
+              {typograf(title)}
+            </h2>
+            <p className="mb-6 max-w-[300px] text-[15px] leading-[20px]">
+              {typograf(summary)}
+            </p>
+            {awards.length > 0 && (
+              <ul className="mb-8 space-y-3">
+                {awards.map((award) => (
+                  <li
+                    key={award.text}
+                    className="flex gap-3 text-[15px] leading-[20px]"
+                  >
+                    {award.place && (
+                      <span className="mt-1 shrink-0 text-[7px] uppercase tracking-wide">
+                        {award.place}
+                      </span>
+                    )}
+                    <span>{typograf(award.text)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <a
+              href={link}
+              className="mt-auto flex items-center justify-center gap-2 text-black opacity-40 transition-opacity hover:opacity-100"
+              tabIndex={infoOpen ? undefined : -1}
+            >
+              <span className="lowercase text-[15px]">смотрим</span>
+              <span className="inline-flex h-4 w-8 items-center justify-center">
                 <img
-                  src={coverSrc}
-                  alt={title}
-                  className="h-full w-full object-cover object-center"
-                />
-              </a>
-              <button
-                type="button"
-                className="absolute right-3 top-3 z-10 flex h-[29px] w-[29px] items-center justify-center"
-                aria-label="Показать описание"
-                onClick={() => setInfoOpen(true)}
-              >
-                <img
-                  src={withBase('/icons/featured-info.svg')}
+                  src={withBase('/icons/arrow-right-sm-black.svg')}
                   alt=""
-                  className="h-[29px] w-[29px]"
+                  className="h-8 w-4 -rotate-90"
                 />
-              </button>
-            </>
-          )}
+              </span>
+            </a>
+          </div>
+
+          <button
+            type="button"
+            className="absolute right-3 top-3 z-10 flex h-[29px] w-[29px] items-center justify-center"
+            aria-label={infoOpen ? 'Показать обложку' : 'Показать описание'}
+            aria-pressed={infoOpen}
+            onClick={() => setInfoOpen((v) => !v)}
+          >
+            <img
+              src={withBase(
+                infoOpen
+                  ? '/icons/featured-photo.svg'
+                  : '/icons/featured-info.svg',
+              )}
+              alt=""
+              className="h-[29px] w-[29px]"
+            />
+          </button>
         </div>
       </div>
 

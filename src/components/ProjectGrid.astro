@@ -16,20 +16,28 @@ interface Props {
 const { projects } = Astro.props;
 ---
 
-<div class="mx-auto grid max-w-[1280px] grid-cols-1 gap-x-6 gap-y-10 px-5 py-14 md:grid-cols-3 md:px-20">
+{/*
+  Mobile (Figma): одна колонка, карточка 342×484, подпись по центру 12px.
+  Desktop: 3 колонки как раньше.
+*/}
+<div
+  class="mx-auto grid max-w-[1280px] grid-cols-1 gap-x-6 gap-y-8 px-[30px] py-8 md:grid-cols-3 md:gap-y-10 md:px-20 md:py-14"
+>
   {
     projects.map((project) => (
-      <a href={project.href} class="group block">
-        <div class="aspect-[411/581] overflow-hidden bg-black">
+      <a href={project.href} class="group mx-auto block w-full max-w-[342px] md:mx-0 md:max-w-none">
+        <div class="aspect-[342/484] overflow-hidden bg-yy-cream md:aspect-[411/581] md:bg-black">
           {project.cover ? (
             <img
               src={project.cover}
               alt={project.title}
-              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : null}
         </div>
-        <p class="mt-4 max-w-[293px] text-[15px] leading-[21px] whitespace-pre-line">
+        <p
+          class="mt-3 max-w-none text-center text-[12px] leading-[18px] whitespace-pre-line md:mt-4 md:max-w-[293px] md:text-left md:text-[15px] md:leading-[21px]"
+        >
           {typograf(project.caption)}
         </p>
       </a>

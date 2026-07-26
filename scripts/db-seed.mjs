@@ -56,12 +56,112 @@ async function migrate() {
       body TEXT NOT NULL DEFAULT '',
       updated_at INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS about_cards (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      num TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL DEFAULT '',
+      bg TEXT NOT NULL DEFAULT 'bg-yy-yellow',
+      text TEXT NOT NULL DEFAULT 'text-black',
+      class_name TEXT NOT NULL DEFAULT 'left-[30%] top-[30%]',
+      z INTEGER NOT NULL DEFAULT 1,
+      rotate TEXT,
+      has_cta INTEGER NOT NULL DEFAULT 0,
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
     CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY,
       expires_at INTEGER NOT NULL
     );
   `);
 }
+
+const DEFAULT_ABOUT_CARDS = [
+  {
+    num: '01',
+    title: 'предисловие',
+    bg: 'bg-[#f29009]',
+    text: 'text-black',
+    className: 'left-[31%] top-[32%]',
+    z: 7,
+    rotate: null,
+    hasCta: 0,
+    sortOrder: 0,
+    body: 'Я — книжный и графический дизайнер. Работаю с книгами, журналами и айдентикой. Беру на себя весь процесс: от исследования и поиска идеи до дизайна, верстки, допечатной подготовки и взаимодействия с типографиями. Работаю с издательствами, медиа, культурными проектами и частными заказчиками.',
+  },
+  {
+    num: '02',
+    title: 'послужной список',
+    bg: 'bg-[#f7bdb2]',
+    text: 'text-black',
+    className: 'left-[38%] top-[10%]',
+    z: 4,
+    rotate: 'rotate-[2deg]',
+    hasCta: 0,
+    sortOrder: 1,
+    body: 'Полтора года работала в журнале <span class="underline underline-offset-2">«Алло, мам»</span>, пройдя путь от ведущего дизайнера до руководителя дизайн-отдела, а параллельно была ведущим дизайнером калининградского журнала <span class="underline underline-offset-2">«9×12»</span>.\n\nМое имя можно встретить на страницах книг издательств *Kongress W Press, АСТ, Бомбора, Nouveaux Angles, Рипол Классик, Калининградская книга*',
+  },
+  {
+    num: '03',
+    title: 'образование',
+    bg: 'bg-yy-yellow',
+    text: 'text-black',
+    className: 'left-[6%] top-[22%]',
+    z: 5,
+    rotate: '-rotate-[3deg]',
+    hasCta: 0,
+    sortOrder: 2,
+    body: 'Окончила бакалавриат Школы дизайна НИУ ВШЭ по профилю «Типографика». Сейчас учусь в магистратуре НИУ ВШЭ на направлении «Искусство книги», где продолжаю исследовать книжный дизайн и работу с печатными изданиями.',
+  },
+  {
+    num: '04',
+    title: 'за кадром',
+    bg: 'bg-[#4a6e7a]',
+    text: 'text-white',
+    className: 'left-[18%] top-[5%]',
+    z: 3,
+    rotate: null,
+    hasCta: 0,
+    sortOrder: 3,
+    body: 'Мне важно видеть проект целиком: от первой идеи и содержания до выбора бумаги, особенностей печати и готового экземпляра.\n\nРаботаю не только с визуальной частью проекта, но и с его технической стороной. Понимаю, как собирается книга, какие решения влияют на производство, и сопровождаю проект до момента, когда он становится физическим объектом.',
+  },
+  {
+    num: '05',
+    title: 'заметки на полях',
+    bg: 'bg-[#4a6e7a]',
+    text: 'text-white',
+    className: 'left-[50%] top-[48%]',
+    z: 6,
+    rotate: '-rotate-[4deg]',
+    hasCta: 1,
+    sortOrder: 4,
+    body: 'Веду блог о книжном дизайне, где делюсь своими проектами, интересными изданиями, находками, деталями верстки и полиграфии. Собираю коллекцию решений, которые вдохновляют и помогают смотреть на книги внимательнее.',
+  },
+  {
+    num: '06',
+    title: 'за пределами страниц',
+    bg: 'bg-[#aebf9f]',
+    text: 'text-black',
+    className: 'left-[46%] top-[9%]',
+    z: 2,
+    rotate: null,
+    hasCta: 0,
+    sortOrder: 5,
+    body: 'Если я не за компьютером, то, скорее всего, с фотоаппаратом или микрофоном в руках. Люблю фотографировать, поэтому сама снимаю все книжные проекты. А еще уже больше года занимаюсь вокалом (обожаю). Иногда делюсь опытом на лекциях и паблик-токах, однажды даже оказалась ведущей концерта. Неожиданно, но мне понравилось.',
+  },
+  {
+    num: '07',
+    title: 'эпилог',
+    bg: 'bg-[#aebf9f]',
+    text: 'text-black',
+    className: 'left-[2%] top-[40%]',
+    z: 1,
+    rotate: 'rotate-[2deg]',
+    hasCta: 0,
+    sortOrder: 6,
+    body: 'Каждая книга для меня — это диалог между автором, дизайнером и читателем. Мне интересно создавать издания, которые хочется не только прочитать, но и прожить.\n\nСейчас в работе несколько новых проектов, но всегда есть место для следующего. Возможно, им станет именно ваш.',
+  },
+];
 
 function toUploadsPath(path) {
   if (typeof path !== 'string') return path;
@@ -101,6 +201,7 @@ async function seed() {
   await client.execute('DELETE FROM project_images');
   await client.execute('DELETE FROM projects');
   await client.execute('DELETE FROM site_pages');
+  await client.execute('DELETE FROM about_cards');
 
   const projectsDir = join(root, 'src/content/projects');
   const files = readdirSync(projectsDir).filter((f) => f.endsWith('.md'));
@@ -166,6 +267,27 @@ async function seed() {
     });
     console.log(`seeded page: ${key}`);
   }
+
+  for (const card of DEFAULT_ABOUT_CARDS) {
+    await client.execute({
+      sql: `INSERT INTO about_cards
+        (num, title, body, bg, text, class_name, z, rotate, has_cta, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        card.num,
+        card.title,
+        card.body,
+        card.bg,
+        card.text,
+        card.className,
+        card.z,
+        card.rotate,
+        card.hasCta,
+        card.sortOrder,
+      ],
+    });
+  }
+  console.log(`seeded ${DEFAULT_ABOUT_CARDS.length} about cards`);
 
   console.log(`Done. DB: ${dbPath}`);
 }

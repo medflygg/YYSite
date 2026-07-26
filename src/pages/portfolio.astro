@@ -10,18 +10,25 @@ const sections = [
     label: 'книги',
     category: 'books' as const,
     hero: '/portfolio/books-hero.jpg',
+    heroMobile: '/portfolio/books-hero-mobile.png',
+    heroCaption: null as string | null,
   },
   {
     id: 'журналы',
     label: 'журналы',
     category: 'magazines' as const,
     hero: '/portfolio/magazines-hero.jpg',
+    heroMobile: '/portfolio/magazines-hero-mobile.png',
+    // Figma: text layer over hero (not baked into the photo)
+    heroCaption: 'Первый выпуск журнала КИПЕНЬ // SPUME',
   },
   {
     id: 'другое',
     label: 'другое',
     category: 'other' as const,
     hero: '/portfolio/other-hero.jpg',
+    heroMobile: '/portfolio/other-hero-mobile.png',
+    heroCaption: null as string | null,
   },
 ];
 
@@ -48,24 +55,55 @@ const sectionCards = await Promise.all(
   {
     sectionCards.map((section) => (
       <section id={section.id} class="scroll-mt-[var(--header-height)]">
-        <div class="relative h-[min(801px,85svh)] w-full overflow-hidden bg-black">
-          <img
-            src={withBase(section.hero)}
-            alt=""
-            class="absolute inset-0 h-full w-full object-cover object-bottom"
-          />
+        {/*
+          Mobile: высота как во Figma (~812), object-cover — без растягивания.
+          Desktop: прежний широкий кадр.
+        */}
+        <div
+          class="relative h-[min(812px,calc(100svh-var(--header-height)))] w-full overflow-hidden bg-black md:h-[min(801px,85svh)]"
+        >
+          <picture>
+            <source
+              media="(min-width: 768px)"
+              srcset={withBase(section.hero)}
+            />
+            <img
+              src={withBase(section.heroMobile)}
+              alt=""
+              class="absolute inset-0 h-full w-full object-cover object-bottom"
+            />
+          </picture>
           <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <h1 class="text-[clamp(56px,10vw,102px)] lowercase leading-none text-white">
+            <h1
+              class="lowercase leading-none text-white text-[clamp(48px,15vw,62px)] md:text-[clamp(56px,10vw,102px)]"
+            >
               {section.label}
             </h1>
             <a
               href={`#${section.id}-витрина`}
-              class="mt-4 opacity-90 transition-opacity hover:opacity-100"
+              class="mt-3 opacity-90 transition-opacity hover:opacity-100 md:mt-4"
               aria-label={`К витрине: ${section.label}`}
             >
-              <img src={withBase('/icons/arrow-down.svg')} alt="" class="h-11 w-6" />
+              <img
+                src={withBase('/icons/arrow-down.svg')}
+                alt=""
+                class="h-[42px] w-[18px] md:h-11 md:w-6"
+              />
             </a>
           </div>
+          {section.heroCaption ? (
+            <p
+              class="pointer-events-none absolute bottom-6 left-1/2 w-[min(280px,80%)] -translate-x-1/2 text-center text-[15px] leading-[21px] text-white/20 md:bottom-8 md:left-auto md:right-[80px] md:w-[410px] md:translate-x-0 md:text-left"
+              aria-hidden="true"
+            >
+              <span class="md:hidden">
+                Первый выпуск журнала
+                <br />
+                КИПЕНЬ // SPUME
+              </span>
+              <span class="hidden md:inline">{section.heroCaption}</span>
+            </p>
+          ) : null}
         </div>
         <div id={`${section.id}-витрина`} class="scroll-mt-[var(--header-height)]">
           <ProjectGrid projects={section.cards} />

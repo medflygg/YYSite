@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AboutCardsEditor from './AboutCardsEditor';
 import AdminShell from './AdminShell';
 import MarkdownEditor from './MarkdownEditor';
 
@@ -44,6 +45,7 @@ export default function PagesEditor() {
   return (
     <AdminShell title="страницы">
       {status ? <p className="mb-6 text-[13px] opacity-50">{status}</p> : null}
+      <AboutCardsEditor />
       <PageBlock page={about} onChange={setAbout} onSave={() => save(about)} />
       <PageBlock
         page={contacts}

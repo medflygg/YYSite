@@ -8,24 +8,45 @@ const featured = await listFeaturedProjects();
 ---
 
 <BaseLayout title="YY" showIntro={true}>
-  <section class="relative min-h-[calc(100svh-var(--header-height))] overflow-hidden">
+  <section
+    class="relative flex min-h-[calc(100svh-var(--header-height))] flex-col overflow-hidden"
+  >
+    {/* Desktop: полноэкранный фон-скетч */}
     <img
       src={withBase('/images/hero-books.png')}
       alt=""
-      class="pointer-events-none absolute inset-0 h-full w-full object-cover mix-blend-multiply"
+      class="pointer-events-none absolute inset-0 hidden h-full w-full object-cover mix-blend-multiply md:block"
     />
+
     <div
-      class="relative z-10 flex min-h-[calc(100svh-var(--header-height))] flex-col items-center justify-center px-6 pb-28 pt-16 text-center"
+      class="relative z-10 flex min-h-[calc(100svh-var(--header-height))] flex-1 flex-col items-center px-6 pt-16 text-center md:justify-center md:pb-28"
     >
-      <h1 class="max-w-[520px] text-[clamp(36px,5vw,51px)] lowercase leading-[1.08]">
+      <h1
+        class="max-w-[520px] text-[clamp(34px,8.5vw,51px)] lowercase leading-[1.08]"
+      >
         Сначала форма,<br />Потом полка.
       </h1>
       <p class="mt-6 max-w-[405px] text-[15px] leading-[20px] lowercase">
         Проектирую книги, журналы<br />и визуальные системы
       </p>
+
+      {/*
+        Mobile (Figma 414px на экране 402): книги чуть шире экрана,
+        края уходят за границы.
+      */}
+      <div class="mt-10 w-[calc(100vw+12px)] max-w-none shrink-0 md:hidden">
+        <img
+          src={withBase('/images/hero-books-mobile.png')}
+          alt=""
+          class="pointer-events-none block h-auto w-full object-contain mix-blend-multiply"
+          width="414"
+          height="240"
+        />
+      </div>
+
       <a
         href="#избранное"
-        class="absolute bottom-10 flex flex-col items-center gap-2 opacity-40 transition-opacity hover:opacity-100"
+        class="mt-auto flex flex-col items-center gap-2 pb-10 pt-8 opacity-40 transition-opacity hover:opacity-100 md:absolute md:bottom-10 md:mt-0 md:pb-0 md:pt-0"
       >
         <span class="lowercase text-[15px]">избранное</span>
         <img src={withBase('/icons/arrow-down.svg')} alt="" class="h-11 w-6" />

@@ -57,6 +57,20 @@ export const sitePages = sqliteTable('site_pages', {
     .$defaultFn(() => new Date()),
 });
 
+export const aboutCards = sqliteTable('about_cards', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  num: text('num').notNull(),
+  title: text('title').notNull(),
+  body: text('body').notNull().default(''),
+  bg: text('bg').notNull().default('bg-yy-yellow'),
+  text: text('text').notNull().default('text-black'),
+  className: text('class_name').notNull().default('left-[30%] top-[30%]'),
+  z: integer('z').notNull().default(1),
+  rotate: text('rotate'),
+  hasCta: integer('has_cta', { mode: 'boolean' }).notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
 export const sessions = sqliteTable('sessions', {
   id: text('id').primaryKey(),
   expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
@@ -66,3 +80,4 @@ export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 export type ProjectImage = typeof projectImages.$inferSelect;
 export type SitePage = typeof sitePages.$inferSelect;
+export type AboutCard = typeof aboutCards.$inferSelect;

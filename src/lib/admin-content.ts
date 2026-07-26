@@ -1,7 +1,15 @@
 import { and, asc, eq } from 'drizzle-orm';
+import {
+  ABOUT_CARD_PALETTE,
+  DEFAULT_ABOUT_CARD_LAYOUTS,
+  formatCardNum,
+  normalizeHex,
+  type AboutCardDTO,
+  type AboutCardInput,
+} from './about-cards';
 import { getDb } from './db/client';
 import { migrate } from './db/migrate';
-import { projectImages, projects, sitePages } from './db/schema';
+import { aboutCards, projectImages, projects, sitePages } from './db/schema';
 import type { ProjectDTO } from './content';
 import { getProjectBySlug, listProjects } from './content';
 
@@ -193,6 +201,58 @@ export async function upsertSitePage(key: string, title: string, body: string) {
       target: sitePages.key,
       set: { title, body, updatedAt: now },
     });
+}
+
+export async function replaceAboutCards(
+  cards: AboutCardInput[],
+): Promise<AboutCardDTO[]> {
+  await migrate();
+  const db = getDb();
+  await db.delete(aboutCards);
+
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const palette = ABOUT_CARD_PALETTE[i % ABOUT_CARD_PALETTE.length];
+    const layout =
+      DEFAULT_ABOUT_CARD_LAYOUTS[i % DEFAULT_ABOUT_CARD_LAYOUTS.length];
+    await db.insert(aboutCards).values({
+      num: formatCardNum(i),
+      title: card.title.trim() || 'без названия',
+      body: card.body || '',
+      bg: (() => {
+        const raw = (card.bg || '').trim();
+        if (!raw) return palette.bg;
+        const fromBracket = raw.match(/^bg-\[#([0-9a-fA-F]{3,8})\]$/);
+        const hex = normalizeHex(fromBracket ? `#${fromBracket[1]}` : raw);
+        if (hex) return `bg-[${hex}]`;
+        return raw;
+      })(),
+      text: card.text || palette.text,
+      className: card.className || layout.className,
+      z: card.z ?? layout.z,
+      rotate: card.rotate ?? layout.rotate,
+      hasCta: Boolean(card.hasCta),
+      sortOrder: i,
+    });
+  }
+
+  const rows = await db
+    .select()
+    .from(aboutCards)
+    .orderBy(asc(aboutCards.sortOrder), asc(aboutCards.id));
+  return rows.map((row) => ({
+    id: row.id,
+    num: row.num,
+    title: row.title,
+    body: row.body,
+    bg: row.bg,
+    text: row.text,
+    className: row.className,
+    z: row.z,
+    rotate: row.rotate,
+    hasCta: Boolean(row.hasCta),
+    sortOrder: row.sortOrder,
+  }));
 }
 
 export async function getProjectById(id: number): Promise<ProjectDTO | null> {

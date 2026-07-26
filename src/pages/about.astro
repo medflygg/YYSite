@@ -1,8 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AboutCards from '../components/AboutCards';
+import { listAboutCards, renderMarkdown } from '../lib/content';
+
+const cards = await listAboutCards();
+const bodiesHtml = Object.fromEntries(
+  cards.map((card) => [card.id, renderMarkdown(card.body)]),
+);
 ---
 
 <BaseLayout title="обо мне">
-  <AboutCards client:load />
+  <AboutCards client:load cards={cards} bodiesHtml={bodiesHtml} />
 </BaseLayout>

@@ -85,10 +85,10 @@ export default function MobileMenu({ pathname }: Props) {
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {/*
-            Фиксированная зона под зайца: низ зоны = полоска над «главная».
-            При раскрытии портфолио растёт только nav ниже — заяц не двигается.
+            Размер/позиция — как до деплоя.
+            isolate + жёлтый фон: multiply не ломается при раскрытии портфолио.
           */}
-          <div className="relative mx-auto h-[min(48svh,420px)] w-full max-w-[402px] shrink-0">
+          <div className="relative isolate mx-auto h-[min(48svh,420px)] w-full max-w-[402px] shrink-0 bg-yy-yellow">
             <img
               src={withBase('/images/menu-creature.png')}
               alt=""
@@ -96,7 +96,7 @@ export default function MobileMenu({ pathname }: Props) {
             />
           </div>
 
-          <nav className="relative z-10 px-8 pb-8">
+          <nav className="relative px-8 pb-8">
             <ul className="flex flex-col">
               <MenuRow>
                 <a
@@ -125,18 +125,19 @@ export default function MobileMenu({ pathname }: Props) {
                 >
                   портфолио
                   <img
-                    src={withBase('/icons/arrow-down.svg')}
+                    src={withBase('/icons/menu-chevron.svg')}
                     alt=""
-                    className={`h-3 w-6 transition-transform duration-200 ${
+                    width={26}
+                    height={13}
+                    className={`block h-[13px] w-[26px] shrink-0 transition-transform duration-200 ${
                       portfolioOpen ? 'rotate-180' : ''
                     }`}
+                    aria-hidden
                   />
                 </button>
                 <div
-                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-                    portfolioOpen
-                      ? 'grid-rows-[1fr] opacity-100'
-                      : 'grid-rows-[0fr] opacity-0'
+                  className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                    portfolioOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                   }`}
                 >
                   <div className="overflow-hidden">
@@ -173,6 +174,17 @@ export default function MobileMenu({ pathname }: Props) {
   );
 }
 
+function HandDivider() {
+  return (
+    <img
+      src={withBase('/icons/divider-hand.svg')}
+      alt=""
+      aria-hidden
+      className="pointer-events-none block h-[2px] w-full select-none object-fill"
+    />
+  );
+}
+
 function MenuRow({
   children,
   last = false,
@@ -181,10 +193,10 @@ function MenuRow({
   last?: boolean;
 }) {
   return (
-    <li
-      className={`border-t border-black ${last ? 'border-b border-black' : ''}`}
-    >
+    <li>
+      <HandDivider />
       {children}
+      {last ? <HandDivider /> : null}
     </li>
   );
 }
