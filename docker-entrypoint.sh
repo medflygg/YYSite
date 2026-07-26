@@ -23,6 +23,14 @@ if [ -d /app/public/projects ]; then
   done
 fi
 
+# Astro Node serves static files from dist/client/, while uploads are written to
+# the persistent volume at public/uploads. Point client assets at the volume.
+if [ -d /app/dist/client ]; then
+  rm -rf /app/dist/client/uploads
+  ln -sfn /app/public/uploads /app/dist/client/uploads
+  echo "[yysite] linked dist/client/uploads -> public/uploads"
+fi
+
 if [ -z "$ADMIN_PASSWORD" ] || [ "$ADMIN_PASSWORD" = "changeme" ]; then
   echo "[yysite] WARNING: set a strong ADMIN_PASSWORD in .env before going public"
 fi
