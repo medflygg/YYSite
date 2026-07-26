@@ -82,7 +82,15 @@ export default function ContentBrowser() {
       fd.set('folder', folderName || 'misc');
       for (const file of Array.from(filesList)) fd.append('file', file);
       const res = await fetch('/api/redactingpages/upload', { method: 'POST', body: fd });
-      const data = await res.json();
+      const text = await res.text();
+      let data: { error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(
+          `Сервер вернул не JSON (${res.status}): ${text.slice(0, 120).replace(/\s+/g, ' ').trim()}`,
+        );
+      }
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       setStatus('файлы загружены');
       await load(folder);

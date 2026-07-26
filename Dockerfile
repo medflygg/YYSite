@@ -6,10 +6,13 @@ RUN npm ci
 
 COPY . .
 
-# Do not bake runtime secrets into the client/server bundle
+# Do not bake runtime secrets into the client/server bundle.
+# SITE_URL must be the public HTTPS origin so Astro CSRF (checkOrigin)
+# matches browser Origin when behind Caddy.
+ARG SITE_URL=https://yanayurasova.art
 ENV ADMIN_PASSWORD=
 ENV SESSION_SECRET=
-ENV SITE_URL=http://localhost:4321
+ENV SITE_URL=${SITE_URL}
 
 RUN npm run db:seed && npm run build
 

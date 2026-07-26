@@ -1,5 +1,9 @@
 # Copy to /etc/caddy/Caddyfile (or include) and replace your.domain
 your.domain {
 	encode gzip
-	reverse_proxy 127.0.0.1:4321
+	reverse_proxy 127.0.0.1:4321 {
+		# So Astro CSRF (security.allowedDomains) sees the public host
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-Proto {scheme}
+	}
 }

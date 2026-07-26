@@ -3,6 +3,20 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 type Folder = { name: string; path: string };
 type FileItem = { name: string; path: string; size: number; mtime: number };
 
+async function readApiJson(res: Response) {
+  const text = await res.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    const hint = text.slice(0, 120).replace(/\s+/g, ' ').trim();
+    throw new Error(
+      hint
+        ? `Сервер вернул не JSON (${res.status}): ${hint}`
+        : `Ошибка загрузки (${res.status})`,
+    );
+  }
+}
+
 async function uploadFiles(files: FileList | File[], folder: string) {
   const fd = new FormData();
   fd.set('folder', folder);
@@ -10,7 +24,7 @@ async function uploadFiles(files: FileList | File[], folder: string) {
     fd.append('file', file);
   }
   const res = await fetch('/api/redactingpages/upload', { method: 'POST', body: fd });
-  const data = await res.json();
+  const data = await readApiJson(res);
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   if (Array.isArray(data.paths)) return data.paths as string[];
   if (data.path) return [data.path as string];
