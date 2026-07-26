@@ -29,9 +29,9 @@ const linkBase =
   'lowercase text-[13px] md:text-[15px] leading-[20px] transition-colors whitespace-nowrap';
 ---
 
-<header class="sticky top-0 z-50 h-[var(--header-height)] w-full bg-yy-yellow">
+<header class="sticky top-0 z-50 h-[var(--header-height)] w-full overflow-visible bg-yy-yellow">
   <div
-    class="mx-auto flex h-full max-w-[1440px] items-center justify-between px-5 md:hidden"
+    class="mx-auto flex h-full max-w-[1440px] items-center justify-between overflow-visible px-5 md:hidden"
   >
     <a
       href={withBase('/')}
@@ -52,9 +52,11 @@ const linkBase =
         href={withBase('/about')}
         class:list={[
           linkBase,
-          aboutExpanded
+          isActive('/about')
             ? 'text-black underline underline-offset-4'
-            : 'text-yy-muted group-hover/about:text-black',
+            : aboutExpanded
+              ? 'text-yy-muted'
+              : 'text-yy-muted group-hover/about:text-black',
         ]}
       >
         обо мне
@@ -91,8 +93,11 @@ const linkBase =
           <div
             class="flex h-full select-text flex-col justify-center gap-0 bg-yy-yellow text-[12px] leading-[15px] text-black"
           >
-            <a href="mailto:YY@gmail.com" class="cursor-text whitespace-nowrap hover:underline">
-              YY@gmail.com
+            <a
+              href="mailto:yurasova.ya@mail.ru"
+              class="cursor-text whitespace-nowrap hover:underline"
+            >
+              yurasova.ya@mail.ru
             </a>
             <a
               href="https://t.me/yanayurasovaa"

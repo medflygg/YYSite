@@ -1,19 +1,139 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSitePage, renderMarkdown } from '../lib/content';
-
-const page = await getSitePage('contacts');
-if (!page) {
-  throw new Error('Missing site page: contacts (run npm run db:seed)');
-}
-const html = renderMarkdown(page.body);
+import { withBase } from '../lib/paths';
+import { typograf } from '../lib/typograf';
 ---
 
-<BaseLayout title={page.title}>
-  <section class="mx-auto flex min-h-[calc(100svh-var(--header-height))] max-w-[720px] flex-col justify-center px-6 py-20">
-    <h1 class="mb-8 text-[clamp(40px,6vw,72px)] lowercase leading-none">
-      {page.title}
-    </h1>
-    <div class="prose-yy text-[18px] leading-[1.45]" set:html={html} />
+<BaseLayout title="контакты">
+  <!-- Mobile: Figma iPhone 17 - контакты -->
+  <section
+    class="relative flex min-h-[calc(100svh-var(--header-height))] flex-col overflow-hidden bg-yy-yellow md:hidden"
+  >
+    <div class="relative z-10 flex flex-1 flex-col items-center px-6 pt-14 text-center">
+      <h1 class="text-[50px] lowercase leading-[1.1]">
+        контакты
+      </h1>
+
+      <div class="mt-6 max-w-[340px] text-[20px] leading-[1.9]">
+        <p>
+          <span class="font-medium">почта:</span>
+          {' '}
+          <a href="mailto:yurasova.ya@mail.ru" class="hover:underline">
+            yurasova.ya@mail.ru
+          </a>
+        </p>
+        <p>
+          <span class="font-medium">телеграм:</span>
+          {' '}
+          <a
+            href="https://t.me/yanayurasovaa"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:underline"
+          >
+            @yanayurasovaa
+          </a>
+        </p>
+        <p class="font-medium">телеграм-канал:</p>
+        <p class="leading-[1.5]">
+          <a
+            href="https://t.me/boookdirecting"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:underline"
+          >
+            {typograf('верстальщик? а наверстай упущенное')}
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="pointer-events-none relative mt-auto h-[min(444px,48svh)] w-full shrink-0 overflow-hidden mix-blend-multiply"
+      aria-hidden="true"
+    >
+      <img
+        src={`${withBase('/images/contacts/bird-mobile.png')}?v=1`}
+        alt=""
+        class="absolute left-[-33.6%] top-[-10.36%] h-[110.36%] w-[182.86%] max-w-none"
+      />
+    </div>
+  </section>
+
+  <!-- Desktop: Figma 06_контакты -->
+  <section
+    class="relative hidden min-h-[calc(100svh-var(--header-height))] items-center justify-center overflow-hidden bg-yy-cream md:flex"
+  >
+    <div
+      class="pointer-events-none absolute left-1/2 top-1/2 isolate -translate-x-1/2 -translate-y-1/2 bg-yy-cream"
+      style="width: min(100%, 1440px, calc((100svh - var(--header-height)) * 1440 / 906)); aspect-ratio: 1440 / 906;"
+      aria-hidden="true"
+    >
+      <div
+        class="absolute right-0 top-0 h-full w-[calc(1197/1440*100%)] overflow-hidden mix-blend-multiply"
+      >
+        <img
+          src={`${withBase('/images/contacts/bird.png')}?v=9`}
+          alt=""
+          class="absolute left-0 top-[-11.62%] h-[113.74%] w-[129.16%] max-w-none"
+        />
+      </div>
+    </div>
+
+    <div
+      class="relative z-10 mx-auto w-full max-w-[1440px] px-5 py-16 md:px-20 md:py-24"
+    >
+      <div class="max-w-[560px]">
+        <h1 class="mb-10 text-[clamp(48px,8vw,85px)] lowercase leading-[0.95]">
+          контакты
+        </h1>
+
+        <ul class="space-y-5 text-[clamp(18px,2.2vw,24px)] leading-[1.45]">
+          <li class="flex items-start gap-3">
+            <img
+              src={withBase('/icons/contact-mail.svg')}
+              alt=""
+              class="mt-1 h-[29px] w-[29px] shrink-0"
+            />
+            <a
+              href="mailto:yurasova.ya@mail.ru"
+              class="break-all hover:underline"
+            >
+              yurasova.ya@mail.ru
+            </a>
+          </li>
+          <li class="flex items-start gap-3">
+            <img
+              src={withBase('/icons/contact-tg.svg')}
+              alt=""
+              class="mt-1 h-[29px] w-[29px] shrink-0"
+            />
+            <a
+              href="https://t.me/yanayurasovaa"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:underline"
+            >
+              телеграм:&nbsp;@yanayurasovaa
+            </a>
+          </li>
+          <li class="flex items-start gap-3">
+            <a
+              href="https://t.me/boookdirecting"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-start gap-3 hover:underline"
+            >
+              <img
+                src={withBase('/icons/contact-note.png')}
+                alt=""
+                class="mt-1 h-[29px] w-[29px] shrink-0 rounded-full object-cover"
+              />
+              <span>{typograf('верстальщик? а наверстай упущенное')}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </section>
 </BaseLayout>

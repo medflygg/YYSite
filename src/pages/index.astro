@@ -33,10 +33,14 @@ const featured = await listFeaturedProjects();
     </div>
   </section>
 
-  <section id="избранное" class="space-y-8 px-5 py-10 md:px-20 md:py-16">
+  <section
+    id="избранное"
+    class="flex flex-col gap-6 px-5 py-10 md:gap-8 md:px-20 md:py-16"
+  >
     {
       featured.map((project) => (
         <FeaturedProject
+          client:visible
           title={project.title}
           summary={project.summary}
           href={`/projects/${project.slug}`}
@@ -48,7 +52,7 @@ const featured = await listFeaturedProjects();
       ))
     }
 
-    <div class="flex justify-center pt-10 pb-16">
+    <div class="flex justify-center pt-6 pb-12 md:pt-10 md:pb-16">
       <a
         href={withBase('/portfolio')}
         class="flex items-center gap-3 opacity-40 transition-opacity hover:opacity-100"

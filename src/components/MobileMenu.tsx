@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { withBase } from '../lib/paths';
 
 type Props = {
@@ -15,12 +15,6 @@ export default function MobileMenu({ pathname }: Props) {
   const [open, setOpen] = useState(false);
   const [portfolioOpen, setPortfolioOpen] = useState(false);
   const panelId = useId();
-
-  const homeActive = pathname === '/';
-  const aboutActive = pathname === '/about';
-  const contactsActive = pathname === '/contacts';
-  const portfolioActive =
-    pathname === '/portfolio' || pathname.startsWith('/projects');
 
   useEffect(() => {
     if (!open) return;
@@ -41,133 +35,156 @@ export default function MobileMenu({ pathname }: Props) {
   }, [pathname]);
 
   useEffect(() => {
-    if (open) setPortfolioOpen(portfolioActive);
-  }, [open, portfolioActive]);
+    if (open) {
+      setPortfolioOpen(
+        pathname === '/portfolio' || pathname.startsWith('/projects'),
+      );
+    }
+  }, [open, pathname]);
 
   return (
     <div className="md:hidden">
       <button
         type="button"
-        className="relative z-[60] flex h-10 w-10 items-center justify-center"
+        className="relative z-[60] -mr-1 flex h-11 w-11 shrink-0 items-center justify-center"
         aria-expanded={open}
         aria-controls={panelId}
         aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="sr-only">{open ? 'Закрыть' : 'Меню'}</span>
-        <span className="relative block h-3 w-5">
-          <span
-            className={`absolute left-0 block h-[2px] w-full bg-black transition-transform duration-200 ${
-              open ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
-            }`}
-          />
-          <span
-            className={`absolute left-0 block h-[2px] w-full bg-black transition-transform duration-200 ${
-              open ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
-            }`}
-          />
-        </span>
+        <img
+          src={withBase(open ? '/icons/menu-close.svg' : '/icons/menu-burger.svg')}
+          alt=""
+          width={21}
+          height={19}
+          className="pointer-events-none block h-[19px] w-[21px]"
+          aria-hidden
+        />
       </button>
 
       <div
         id={panelId}
-        className={`fixed inset-0 z-[45] flex flex-col bg-yy-cream pt-[var(--header-height)] transition-[opacity,visibility] duration-200 ${
-          open ? 'visible opacity-100' : 'invisible opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-[55] flex flex-col bg-yy-yellow transition-[opacity,visibility] duration-200 ${
+          open
+            ? 'visible opacity-100'
+            : 'invisible pointer-events-none opacity-0'
         }`}
         aria-hidden={!open}
       >
-        <nav className="flex flex-1 flex-col overflow-y-auto px-5 pt-10 pb-8">
-          <ul className="flex flex-col items-center gap-5 text-center text-[28px] lowercase leading-none">
-            <li>
-              <a
-                href={withBase('/')}
-                className={homeActive ? 'text-yy-muted' : 'text-black'}
-                onClick={() => setOpen(false)}
-              >
-                главная
-              </a>
-            </li>
-            <li>
-              <a
-                href={withBase('/about')}
-                className={aboutActive ? 'text-yy-muted' : 'text-black'}
-                onClick={() => setOpen(false)}
-              >
-                обо мне
-              </a>
-            </li>
-            <li>
-              <a
-                href={withBase('/contacts')}
-                className={contactsActive ? 'text-yy-muted' : 'text-black'}
-                onClick={() => setOpen(false)}
-              >
-                контакты
-              </a>
-            </li>
-            <li>
-              <button
-                type="button"
-                className={`lowercase ${
-                  portfolioOpen || portfolioActive ? 'text-yy-muted' : 'text-black'
-                }`}
-                aria-expanded={portfolioOpen}
-                onClick={() => {
-                  if (!portfolioOpen) {
-                    setPortfolioOpen(true);
-                    return;
-                  }
-                  setOpen(false);
-                  window.location.href = withBase('/portfolio');
-                }}
-              >
-                портфолио
-              </button>
-            </li>
-          </ul>
-
-          <div
-            className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-              portfolioOpen
-                ? 'grid-rows-[1fr] opacity-100'
-                : 'grid-rows-[0fr] opacity-0'
-            }`}
+        <div className="flex h-[var(--header-height)] shrink-0 items-center px-5">
+          <a
+            href={withBase('/')}
+            className="uppercase text-[15px] tracking-[0.04em] text-black"
+            aria-label="YY — на главную"
+            onClick={() => setOpen(false)}
           >
-            <div className="overflow-hidden">
-              <div className="my-8 border-t border-black/15" />
-              <ul className="flex flex-col items-start gap-4 text-[20px] lowercase leading-none">
-                {portfolioLinks.map((link) => (
-                  <li key={link.href}>
-                    <a
-                      href={withBase(link.href)}
-                      className="text-black"
-                      onClick={() => setOpen(false)}
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            YY
+          </a>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {/*
+            Фиксированная зона под зайца: низ зоны = полоска над «главная».
+            При раскрытии портфолио растёт только nav ниже — заяц не двигается.
+          */}
+          <div className="relative mx-auto h-[min(48svh,420px)] w-full max-w-[402px] shrink-0">
+            <img
+              src={withBase('/images/menu-creature.png')}
+              alt=""
+              className="pointer-events-none absolute bottom-0 right-0 h-[min(42svh,360px)] w-auto max-w-[82%] object-contain object-bottom mix-blend-multiply"
+            />
           </div>
 
-          <div className="mt-auto border-t border-black/15 pt-6">
-            <div className="flex flex-col gap-2 text-[15px] leading-[20px]">
-              <a href="mailto:YY@gmail.com" className="text-black">
-                YY@gmail.com
-              </a>
-              <a
-                href="https://t.me/yanayurasovaa"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-black"
-              >
-                TG: @yanayurasovaa
-              </a>
-            </div>
-          </div>
-        </nav>
+          <nav className="relative z-10 px-8 pb-8">
+            <ul className="flex flex-col">
+              <MenuRow>
+                <a
+                  href={withBase('/')}
+                  className="block py-3 text-[32px] lowercase leading-[1.2] text-black"
+                  onClick={() => setOpen(false)}
+                >
+                  главная
+                </a>
+              </MenuRow>
+              <MenuRow>
+                <a
+                  href={withBase('/about')}
+                  className="block py-3 text-[32px] lowercase leading-[1.2] text-black"
+                  onClick={() => setOpen(false)}
+                >
+                  обо мне
+                </a>
+              </MenuRow>
+              <MenuRow>
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between py-3 text-left text-[32px] lowercase leading-[1.2] text-black"
+                  aria-expanded={portfolioOpen}
+                  onClick={() => setPortfolioOpen((v) => !v)}
+                >
+                  портфолио
+                  <img
+                    src={withBase('/icons/arrow-down.svg')}
+                    alt=""
+                    className={`h-3 w-6 transition-transform duration-200 ${
+                      portfolioOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                    portfolioOpen
+                      ? 'grid-rows-[1fr] opacity-100'
+                      : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <ul className="flex flex-col gap-1 pb-3">
+                      {portfolioLinks.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            href={withBase(link.href)}
+                            className="block py-1 text-[19px] lowercase leading-[25px] text-black"
+                            onClick={() => setOpen(false)}
+                          >
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </MenuRow>
+              <MenuRow last>
+                <a
+                  href={withBase('/contacts')}
+                  className="block py-3 text-[32px] lowercase leading-[1.2] text-black"
+                  onClick={() => setOpen(false)}
+                >
+                  контакты
+                </a>
+              </MenuRow>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
+  );
+}
+
+function MenuRow({
+  children,
+  last = false,
+}: {
+  children: ReactNode;
+  last?: boolean;
+}) {
+  return (
+    <li
+      className={`border-t border-black ${last ? 'border-b border-black' : ''}`}
+    >
+      {children}
+    </li>
   );
 }

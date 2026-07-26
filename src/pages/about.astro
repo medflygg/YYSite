@@ -1,20 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSitePage, renderMarkdown } from '../lib/content';
-
-const page = await getSitePage('about');
-if (!page) {
-  throw new Error('Missing site page: about (run npm run db:seed)');
-}
-const html = renderMarkdown(page.body);
+import AboutCards from '../components/AboutCards';
 ---
 
-<BaseLayout title={page.title}>
-  <section class="mx-auto flex min-h-[calc(100svh-var(--header-height))] max-w-[720px] flex-col justify-center px-6 py-20">
-    <h1 class="mb-8 text-[clamp(40px,6vw,72px)] lowercase leading-none">
-      {page.title}
-    </h1>
-    <div class="prose-yy text-[18px] leading-[1.45]" set:html={html} />
-  </section>
-  <div class="h-40 bg-black/90" aria-hidden="true"></div>
+<BaseLayout title="обо мне">
+  <AboutCards client:load />
 </BaseLayout>

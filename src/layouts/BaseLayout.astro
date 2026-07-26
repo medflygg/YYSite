@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Typograf from '../components/Typograf.astro';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -24,7 +25,8 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" type="image/png" href={withBase('/favicon.png')} />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <meta name="generator" content={Astro.generator} />
@@ -178,5 +180,6 @@ const pageTitle = title === 'YY' ? 'YY — портфолио' : `${title} — Y
     <main class="relative">
       <slot />
     </main>
+    <Typograf />
   </body>
 </html>

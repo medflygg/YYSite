@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell';
+import MarkdownEditor from './MarkdownEditor';
 
 type Page = { key: string; title: string; body: string };
 
@@ -73,14 +74,14 @@ function PageBlock({
           onChange={(e) => onChange({ ...page, title: e.target.value })}
         />
       </label>
-      <label className="mb-4 block">
-        <span className="mb-1 block text-[13px] opacity-50">текст (markdown)</span>
-        <textarea
-          className="min-h-[180px] w-full border border-black/20 bg-transparent p-3 outline-none"
+      <div className="mb-4">
+        <MarkdownEditor
+          label="текст (markdown)"
           value={page.body}
-          onChange={(e) => onChange({ ...page, body: e.target.value })}
+          onChange={(body) => onChange({ ...page, body })}
+          minHeightClass="min-h-[180px]"
         />
-      </label>
+      </div>
       <button
         type="button"
         onClick={onSave}

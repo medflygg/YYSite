@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import { getDb } from './db/client';
 import { migrate } from './db/migrate';
 import { projectImages, projects, sitePages, type Project } from './db/schema';
+import { typografHtml } from './typograf';
 
 let migrated = false;
 
@@ -88,5 +89,6 @@ export async function getSitePage(key: string) {
 }
 
 export function renderMarkdown(md: string) {
-  return marked.parse(md || '', { async: false }) as string;
+  const html = marked.parse(md || '', { async: false }) as string;
+  return typografHtml(html);
 }

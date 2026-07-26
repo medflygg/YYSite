@@ -61,6 +61,20 @@ body {
 
 .prose-yy a {
   color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-yy strong {
+  font-weight: 500;
+}
+
+.prose-yy em {
+  font-style: italic;
+}
+
+.prose-yy u {
+  text-decoration: underline;
   text-underline-offset: 3px;
 }
 

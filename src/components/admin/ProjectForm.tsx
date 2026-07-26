@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminShell from './AdminShell';
 import { GalleryField, ImageField } from './ImagePicker';
+import MarkdownEditor from './MarkdownEditor';
 
 type Award = { place?: string; text: string };
 
@@ -212,13 +213,12 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
             onChange={(e) => set('caption', e.target.value)}
           />
         </Field>
-        <Field label="текст страницы (markdown)">
-          <textarea
-            className="field min-h-[160px]"
-            value={form.body}
-            onChange={(e) => set('body', e.target.value)}
-          />
-        </Field>
+        <MarkdownEditor
+          label="текст страницы (markdown)"
+          value={form.body}
+          onChange={(v) => set('body', v)}
+          minHeightClass="min-h-[160px]"
+        />
 
         <ImageField
           label="обложка"

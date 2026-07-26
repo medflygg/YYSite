@@ -6,6 +6,8 @@ import {
   listProjects,
   renderMarkdown,
 } from '../../lib/content';
+import { typograf } from '../../lib/typograf';
+import { withBase } from '../../lib/paths';
 
 /** Static on GitHub Pages; SSR on VPS when STATIC_EXPORT is unset. */
 export const prerender = import.meta.env.STATIC_EXPORT === 'true';
@@ -39,27 +41,39 @@ const bodyHtml = renderMarkdown(project.body);
         <footer
           class="mt-4 grid grid-cols-[1fr_auto_1fr] items-start gap-2 text-[15px] leading-[20px]"
         >
-          <span class="min-w-0">{project.client}</span>
+          <span class="min-w-0">{typograf(project.client)}</span>
           <span class="text-center">{project.year}</span>
-          <span class="min-w-0 text-right">{project.specs}</span>
+          <span class="min-w-0 text-right">{typograf(project.specs)}</span>
         </footer>
       </div>
 
       <aside class="lg:pt-0">
         <h1 class="mb-6 text-[clamp(32px,4vw,49px)] lowercase leading-[1.1]">
-          {project.title}
+          {typograf(project.title)}
         </h1>
         <div class="prose-yy mb-8 text-[15px] leading-[20px]" set:html={bodyHtml} />
 
         {
           project.behindTheScenes.length > 0 && (
             <>
-              <hr class="my-6 border-black/80" />
+              <img
+                src={withBase('/icons/divider-hand.svg')}
+                alt=""
+                aria-hidden="true"
+                class="my-6 block h-[2px] w-full select-none object-fill"
+              />
               <div class="text-[15px] leading-[20px]">
-                <p class="mb-1 underline underline-offset-2">что осталось за кадром:</p>
+                <p class="mb-1 underline underline-offset-2">
+                  {typograf('что осталось за кадром:')}
+                </p>
                 <ul>
                   {project.behindTheScenes.map((item) => (
-                    <li>– {item}{item.endsWith(';') || item.endsWith('.') ? '' : ';'}</li>
+                    <li>
+                      –{' '}
+                      {typograf(
+                        `${item}${item.endsWith(';') || item.endsWith('.') ? '' : ';'}`,
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -70,12 +84,19 @@ const bodyHtml = renderMarkdown(project.body);
         {
           project.whatHappenedNext.length > 0 && (
             <>
-              <hr class="my-6 border-black/80" />
+              <img
+                src={withBase('/icons/divider-hand.svg')}
+                alt=""
+                aria-hidden="true"
+                class="my-6 block h-[2px] w-full select-none object-fill"
+              />
               <div class="text-[15px] leading-[20px]">
-                <p class="mb-1 underline underline-offset-2">что было дальше:</p>
+                <p class="mb-1 underline underline-offset-2">
+                  {typograf('что было дальше:')}
+                </p>
                 <ul>
                   {project.whatHappenedNext.map((item) => (
-                    <li>– {item}</li>
+                    <li>– {typograf(item)}</li>
                   ))}
                 </ul>
               </div>

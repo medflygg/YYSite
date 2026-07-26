@@ -1,4 +1,6 @@
 ---
+import { typograf } from '../lib/typograf';
+
 interface ProjectCard {
   id: string;
   title: string;
@@ -28,7 +30,7 @@ const { projects } = Astro.props;
           ) : null}
         </div>
         <p class="mt-4 max-w-[293px] text-[15px] leading-[21px] whitespace-pre-line">
-          {project.caption}
+          {typograf(project.caption)}
         </p>
       </a>
     ))

@@ -1,0 +1,44 @@
+---
+/** Прогоняет видимый текст в <main> через Typograf (висячие предлоги и т.п.). */
+---
+
+<script>
+  import { typograf } from '../lib/typograf';
+
+  const SKIP = new Set([
+    'SCRIPT',
+    'STYLE',
+    'NOSCRIPT',
+    'TEXTAREA',
+    'INPUT',
+    'CODE',
+    'PRE',
+    'KBD',
+    'SAMP',
+  ]);
+
+  function walk(node: Node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const value = node.nodeValue;
+      if (!value || !/\S/.test(value)) return;
+      const next = typograf(value);
+      if (next !== value) node.nodeValue = next;
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    const el = node as Element;
+    if (SKIP.has(el.tagName) || el.closest('[data-no-typograf]')) return;
+
+    const children = Array.from(node.childNodes);
+    for (const child of children) walk(child);
+  }
+
+  function run() {
+    const root = document.querySelector('main');
+    if (root) walk(root);
+  }
+
+  run();
+  document.addEventListener('astro:page-load', run);
+</script>
