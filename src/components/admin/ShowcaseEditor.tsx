@@ -405,7 +405,9 @@ function HomeShowcase({
                   )
                 }
               >
-                layout: {project.featuredLayout}
+                {project.featuredLayout === 'left'
+                  ? 'карточка слева'
+                  : 'карточка справа'}
               </button>
               <button
                 type="button"
@@ -442,67 +444,76 @@ function HomeShowcase({
 }
 
 function FeaturedPreview({ project }: { project: Item }) {
-  const yellowFirst = project.featuredLayout === 'left';
+  const cardOnLeft = project.featuredLayout === 'left';
   const panelImage = project.cardImage || project.cover;
   const awards = Array.isArray(project.awards) ? project.awards : [];
 
+  const cardPanel = (
+    <div className="featured-panel relative min-h-[320px] overflow-hidden md:min-h-[480px]">
+      <img
+        src={panelImage}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
+      <div className="featured-panel-overlay absolute inset-0 flex flex-col bg-yy-yellow p-7 opacity-0 transition-opacity duration-300 md:p-8">
+        <h2 className="mb-6 max-w-[373px] text-[clamp(28px,4vw,48px)] lowercase leading-[1.1]">
+          {project.title}
+        </h2>
+        <p className="mb-8 max-w-[361px] text-[15px] leading-[20px]">
+          {project.summary}
+        </p>
+        {awards.length > 0 ? (
+          <ul className="mb-16 space-y-3">
+            {awards.map((award) => (
+              <li
+                key={award.text}
+                className="flex gap-3 text-[15px] leading-[20px]"
+              >
+                {award.place ? (
+                  <span className="mt-1 shrink-0 text-[7px] uppercase tracking-wide">
+                    {award.place}
+                  </span>
+                ) : null}
+                <span>{award.text}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const coverPanel = (
+    <div className="relative min-h-[240px] overflow-hidden md:min-h-[480px]">
+      <img
+        src={project.cover}
+        alt={project.title}
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
+    </div>
+  );
+
   return (
     <div
-      className={`relative mx-auto grid w-full max-w-[1280px] grid-cols-1 overflow-hidden ${
-        yellowFirst
+      className={`relative mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-2.5 ${
+        cardOnLeft
           ? 'md:grid-cols-[413fr_857fr]'
           : 'md:grid-cols-[857fr_413fr]'
       }`}
     >
-      <div
-        className={`featured-panel relative min-h-[320px] overflow-hidden md:min-h-[480px] ${
-          yellowFirst ? 'md:order-1' : 'md:order-2'
-        }`}
-      >
-        <img
-          src={panelImage}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          draggable={false}
-        />
-        <div className="featured-panel-overlay absolute inset-0 flex flex-col bg-yy-yellow p-7 opacity-0 transition-opacity duration-300 md:p-8">
-          <h2 className="mb-6 max-w-[373px] text-[clamp(28px,4vw,48px)] lowercase leading-[1.1]">
-            {project.title}
-          </h2>
-          <p className="mb-8 max-w-[361px] text-[15px] leading-[20px]">
-            {project.summary}
-          </p>
-          {awards.length > 0 ? (
-            <ul className="mb-16 space-y-3">
-              {awards.map((award) => (
-                <li
-                  key={award.text}
-                  className="flex gap-3 text-[15px] leading-[20px]"
-                >
-                  {award.place ? (
-                    <span className="mt-1 shrink-0 text-[7px] uppercase tracking-wide">
-                      {award.place}
-                    </span>
-                  ) : null}
-                  <span>{award.text}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      </div>
-      <div
-        className={`relative min-h-[240px] overflow-hidden md:min-h-[480px] ${
-          yellowFirst ? 'md:order-2' : 'md:order-1'
-        }`}
-      >
-        <img
-          src={project.cover}
-          alt={project.title}
-          className="absolute inset-0 h-full w-full object-cover"
-          draggable={false}
-        />
-      </div>
+      {cardOnLeft ? (
+        <>
+          {cardPanel}
+          {coverPanel}
+        </>
+      ) : (
+        <>
+          {coverPanel}
+          {cardPanel}
+        </>
+      )}
     </div>
   );
 }

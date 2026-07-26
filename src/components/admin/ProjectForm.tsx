@@ -167,8 +167,8 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
                   set('featuredLayout', e.target.value as 'left' | 'right')
                 }
               >
-                <option value="left">жёлтый слева</option>
-                <option value="right">жёлтый справа</option>
+                <option value="left">карточка слева · обложка справа</option>
+                <option value="right">обложка слева · карточка справа</option>
               </select>
             </Field>
           </div>
