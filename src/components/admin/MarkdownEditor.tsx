@@ -112,9 +112,19 @@ export default function MarkdownEditor({
     const el = ref.current;
     if (!el) return;
 
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const selected = value.slice(start, end);
+    let start = el.selectionStart;
+    let end = el.selectionEnd;
+    let selected = value.slice(start, end);
+
+    // Пробелы/переносы оставляем снаружи маркеров — иначе **слово ** не парсится
+    // и «пропадает» пробел между жирным словом и следующим.
+    const leadWs = selected.match(/^\s*/)?.[0] ?? '';
+    const trailWs = selected.match(/\s*$/)?.[0] ?? '';
+    if (leadWs || trailWs) {
+      start += leadWs.length;
+      end -= trailWs.length;
+      selected = value.slice(start, end);
+    }
 
     let next: string;
     let selStart: number;

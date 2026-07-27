@@ -59,6 +59,10 @@ body {
   line-height: 1.35;
 }
 
+.prose-yy p:last-child {
+  margin-bottom: 0;
+}
+
 .prose-yy a {
   color: inherit;
   text-decoration: underline;

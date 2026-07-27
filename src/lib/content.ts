@@ -117,6 +117,7 @@ export async function listAboutCards(): Promise<AboutCardDTO[]> {
 }
 
 export function renderMarkdown(md: string) {
-  const html = marked.parse(md || '', { async: false }) as string;
+  // breaks: true — один Enter = <br>, два Enter = новый абзац
+  const html = marked.parse(md || '', { async: false, breaks: true }) as string;
   return typografHtml(html);
 }

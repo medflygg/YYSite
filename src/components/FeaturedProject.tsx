@@ -88,7 +88,7 @@ export default function FeaturedProject({
 
   return (
     <div className="w-full">
-      {/* Mobile (Figma iPhone): обложка ↔ жёлтое описание по иконкам */}
+      {/* Mobile: картинка карточки ↔ жёлтое описание по иконкам */}
       <div className="relative mx-auto w-full max-w-[342px] md:hidden">
         <div className="relative aspect-[342/483] w-full overflow-hidden bg-yy-yellow">
           <a
@@ -100,7 +100,7 @@ export default function FeaturedProject({
             aria-hidden={infoOpen}
           >
             <img
-              src={coverSrc}
+              src={panelImage}
               alt={title}
               className="h-full w-full object-cover object-center"
             />
@@ -156,7 +156,7 @@ export default function FeaturedProject({
           <button
             type="button"
             className="absolute right-3 top-3 z-10 flex h-[29px] w-[29px] items-center justify-center"
-            aria-label={infoOpen ? 'Показать обложку' : 'Показать описание'}
+            aria-label={infoOpen ? 'Показать картинку' : 'Показать описание'}
             aria-pressed={infoOpen}
             onClick={() => setInfoOpen((v) => !v)}
           >

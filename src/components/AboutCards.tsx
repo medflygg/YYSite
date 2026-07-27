@@ -116,7 +116,7 @@ function CardHeader({
 function PortraitCta() {
   return (
     <a
-      href="https://t.me/yanayurasovaa"
+      href="https://t.me/boookdirecting"
       target="_blank"
       rel="noopener noreferrer"
       className="mt-8 flex items-center gap-4 lowercase text-[15px] leading-[20px] text-inherit opacity-90 hover:opacity-100"
