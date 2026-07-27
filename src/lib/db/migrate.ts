@@ -35,6 +35,7 @@ export async function migrate() {
       body TEXT NOT NULL DEFAULT '',
       cover TEXT NOT NULL DEFAULT '',
       card_image TEXT,
+      portfolio_cover TEXT,
       awards TEXT NOT NULL DEFAULT '[]',
       behind_the_scenes TEXT NOT NULL DEFAULT '[]',
       what_happened_next TEXT NOT NULL DEFAULT '[]',
@@ -71,6 +72,17 @@ export async function migrate() {
       expires_at INTEGER NOT NULL
     );
   `);
+
+  // Additive columns for existing DBs
+  for (const sql of [
+    `ALTER TABLE projects ADD COLUMN portfolio_cover TEXT`,
+  ]) {
+    try {
+      await client.execute(sql);
+    } catch {
+      /* column already exists */
+    }
+  }
 
   const count = await client.execute('SELECT COUNT(*) AS c FROM about_cards');
   const n = Number(count.rows[0]?.c ?? 0);

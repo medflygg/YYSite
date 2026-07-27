@@ -10,6 +10,7 @@ type Item = {
   summary: string;
   cover: string;
   cardImage: string | null;
+  portfolioCover: string | null;
   caption: string | null;
   client: string | null;
   category: 'books' | 'magazines' | 'other';
@@ -556,6 +557,7 @@ function PortfolioShowcase({
         {items.map((project, index) => {
           const active = drag.dragIndex === index;
           const over = drag.overIndex === index && drag.dragIndex !== index;
+          const thumb = project.portfolioCover || project.cover;
           const caption =
             project.caption ?? `${project.title}\n${project.client ?? ''}`;
           return (
@@ -572,9 +574,9 @@ function PortfolioShowcase({
             >
               <div className="pointer-events-none">
                 <div className="aspect-[411/581] overflow-hidden bg-black">
-                  {project.cover ? (
+                  {thumb ? (
                     <img
-                      src={project.cover}
+                      src={thumb}
                       alt={project.title}
                       className="h-full w-full object-cover"
                       draggable={false}

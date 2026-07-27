@@ -38,6 +38,7 @@ async function migrate() {
       body TEXT NOT NULL DEFAULT '',
       cover TEXT NOT NULL DEFAULT '',
       card_image TEXT,
+      portfolio_cover TEXT,
       awards TEXT NOT NULL DEFAULT '[]',
       behind_the_scenes TEXT NOT NULL DEFAULT '[]',
       what_happened_next TEXT NOT NULL DEFAULT '[]',
@@ -218,9 +219,9 @@ async function seed() {
     const result = await client.execute({
       sql: `INSERT INTO projects (
         slug, title, category, featured, featured_order, featured_layout, portfolio_order,
-        year, client, specs, summary, caption, body, cover, card_image,
+        year, client, specs, summary, caption, body, cover, card_image, portfolio_cover,
         awards, behind_the_scenes, what_happened_next, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         slug,
         data.title,
@@ -237,6 +238,7 @@ async function seed() {
         content.trim(),
         toUploadsPath(data.cover || ''),
         toUploadsPath(data.cardImage ?? null),
+        toUploadsPath(data.portfolioCover ?? null),
         JSON.stringify(data.awards || []),
         JSON.stringify(data.behindTheScenes || []),
         JSON.stringify(data.whatHappenedNext || []),

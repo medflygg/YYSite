@@ -14,6 +14,7 @@ const projects = defineCollection({
     specs: z.string().optional(),
     cover: z.string(),
     cardImage: z.string().optional(),
+    portfolioCover: z.string().optional(),
     gallery: z.array(z.string()).default([]),
     summary: z.string(),
     caption: z.string().optional(),

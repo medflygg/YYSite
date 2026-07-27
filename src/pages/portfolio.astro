@@ -38,7 +38,7 @@ async function cardsFor(category: 'books' | 'magazines' | 'other') {
     id: p.slug,
     title: p.title,
     href: withBase(`/projects/${p.slug}`),
-    cover: withBase(p.cover),
+    cover: withBase(p.portfolioCover || p.cover),
     caption: p.caption ?? `${p.title}\n${p.client ?? ''}`,
   }));
 }

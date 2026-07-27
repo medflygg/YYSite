@@ -29,6 +29,7 @@ export type ProjectInput = {
   body?: string;
   cover?: string;
   cardImage?: string | null;
+  portfolioCover?: string | null;
   awards?: { place?: string; text: string }[];
   behindTheScenes?: string[];
   whatHappenedNext?: string[];
@@ -89,6 +90,7 @@ export async function createProject(input: ProjectInput) {
       body: input.body || '',
       cover: input.cover || '',
       cardImage: input.cardImage ?? null,
+      portfolioCover: input.portfolioCover ?? null,
       awards: input.awards || [],
       behindTheScenes: input.behindTheScenes || [],
       whatHappenedNext: input.whatHappenedNext || [],
@@ -124,6 +126,7 @@ export async function updateProject(id: number, input: Partial<ProjectInput>) {
     ['body', 'body'],
     ['cover', 'cover'],
     ['cardImage', 'cardImage'],
+    ['portfolioCover', 'portfolioCover'],
     ['awards', 'awards'],
     ['behindTheScenes', 'behindTheScenes'],
     ['whatHappenedNext', 'whatHappenedNext'],

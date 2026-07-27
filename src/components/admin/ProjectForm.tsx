@@ -22,6 +22,7 @@ type Project = {
   body: string;
   cover: string;
   cardImage: string;
+  portfolioCover: string;
   awards: Award[];
   behindTheScenes: string[];
   whatHappenedNext: string[];
@@ -44,6 +45,7 @@ const empty: Project = {
   body: '',
   cover: '',
   cardImage: '',
+  portfolioCover: '',
   awards: [],
   behindTheScenes: [],
   whatHappenedNext: [],
@@ -69,6 +71,7 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
           specs: p.specs || '',
           caption: p.caption || '',
           cardImage: p.cardImage || '',
+          portfolioCover: p.portfolioCover || '',
           awards: p.awards || [],
           behindTheScenes: p.behindTheScenes || [],
           whatHappenedNext: p.whatHappenedNext || [],
@@ -221,16 +224,22 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
         />
 
         <ImageField
-          label="обложка"
+          label="избранное: обложка (широкий фрейм)"
           value={form.cover}
           folder={folder}
           onChange={(path) => set('cover', path)}
         />
         <ImageField
-          label="картинка карточки (главная)"
+          label="избранное: картинка карточки (узкий фрейм)"
           value={form.cardImage}
           folder={folder}
           onChange={(path) => set('cardImage', path)}
+        />
+        <ImageField
+          label="портфолио: обложка в сетке"
+          value={form.portfolioCover}
+          folder={folder}
+          onChange={(path) => set('portfolioCover', path)}
         />
         <GalleryField
           label="галерея"

@@ -19,6 +19,8 @@ export const projects = sqliteTable('projects', {
   body: text('body').notNull().default(''),
   cover: text('cover').notNull().default(''),
   cardImage: text('card_image'),
+  /** Thumbnail on /portfolio grid (falls back to cover if empty). */
+  portfolioCover: text('portfolio_cover'),
   awards: text('awards', { mode: 'json' })
     .$type<{ place?: string; text: string }[]>()
     .notNull()
