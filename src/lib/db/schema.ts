@@ -10,6 +10,8 @@ export const projects = sqliteTable('projects', {
   featuredLayout: text('featured_layout', { enum: ['left', 'right'] })
     .notNull()
     .default('left'),
+  /** Hidden from public portfolio / home; still editable in admin. */
+  archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
   portfolioOrder: integer('portfolio_order').notNull().default(0),
   year: integer('year'),
   client: text('client'),

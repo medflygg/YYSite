@@ -11,7 +11,9 @@ import { getDb } from './db/client';
 import { migrate } from './db/migrate';
 import { aboutCards, projectImages, projects, sitePages } from './db/schema';
 import type { ProjectDTO } from './content';
-import { getProjectBySlug, listProjects } from './content';
+import { listProjects } from './content';
+import { existsSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
 
 export type ProjectInput = {
   slug: string;
@@ -20,6 +22,7 @@ export type ProjectInput = {
   featured?: boolean;
   featuredOrder?: number | null;
   featuredLayout?: 'left' | 'right';
+  archived?: boolean;
   portfolioOrder?: number;
   year?: number | null;
   client?: string | null;
@@ -55,6 +58,11 @@ function slugify(input: string) {
 
 export { slugify };
 
+async function getProjectBySlugAdmin(slug: string): Promise<ProjectDTO | null> {
+  const all = await listProjects();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
 async function setGallery(projectId: number, gallery: string[]) {
   const db = getDb();
   await db.delete(projectImages).where(eq(projectImages.projectId, projectId));
@@ -81,6 +89,7 @@ export async function createProject(input: ProjectInput) {
       featured: Boolean(input.featured),
       featuredOrder: input.featuredOrder ?? null,
       featuredLayout: input.featuredLayout || 'left',
+      archived: Boolean(input.archived),
       portfolioOrder: input.portfolioOrder ?? 0,
       year: input.year ?? null,
       client: input.client ?? null,
@@ -103,7 +112,7 @@ export async function createProject(input: ProjectInput) {
   if (input.gallery?.length) {
     await setGallery(row.id, input.gallery);
   }
-  return getProjectBySlug(row.slug);
+  return getProjectBySlugAdmin(row.slug);
 }
 
 export async function updateProject(id: number, input: Partial<ProjectInput>) {
@@ -117,6 +126,7 @@ export async function updateProject(id: number, input: Partial<ProjectInput>) {
     ['featured', 'featured'],
     ['featuredOrder', 'featuredOrder'],
     ['featuredLayout', 'featuredLayout'],
+    ['archived', 'archived'],
     ['portfolioOrder', 'portfolioOrder'],
     ['year', 'year'],
     ['client', 'client'],
@@ -135,6 +145,11 @@ export async function updateProject(id: number, input: Partial<ProjectInput>) {
     if (from in input) patch[to] = input[from];
   }
 
+  if (input.archived === true) {
+    patch.featured = false;
+    patch.featuredOrder = null;
+  }
+
   const result = await db
     .update(projects)
     .set(patch)
@@ -145,13 +160,20 @@ export async function updateProject(id: number, input: Partial<ProjectInput>) {
   if (input.gallery) {
     await setGallery(id, input.gallery);
   }
-  return getProjectBySlug(row.slug);
+  return getProjectBySlugAdmin(row.slug);
 }
 
 export async function deleteProject(id: number) {
   await migrate();
   const db = getDb();
+  const project = await getProjectById(id);
   await db.delete(projects).where(eq(projects.id, id));
+  if (project?.slug) {
+    const dir = join(process.cwd(), 'public', 'uploads', project.slug);
+    if (existsSync(dir)) {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
 }
 
 export async function reorderFeatured(orderedIds: number[]) {
@@ -265,17 +287,18 @@ export async function getProjectById(id: number): Promise<ProjectDTO | null> {
 
 export async function listShowcase() {
   const all = await listProjects();
+  const live = all.filter((p) => !p.archived);
   return {
-    featured: all
+    featured: live
       .filter((p) => p.featured)
       .sort((a, b) => (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99)),
-    books: all
+    books: live
       .filter((p) => p.category === 'books')
       .sort((a, b) => a.portfolioOrder - b.portfolioOrder),
-    magazines: all
+    magazines: live
       .filter((p) => p.category === 'magazines')
       .sort((a, b) => a.portfolioOrder - b.portfolioOrder),
-    other: all
+    other: live
       .filter((p) => p.category === 'other')
       .sort((a, b) => a.portfolioOrder - b.portfolioOrder),
   };

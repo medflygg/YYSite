@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { marked } from 'marked';
 import type { AboutCardDTO } from './about-cards';
 import { getDb } from './db/client';
@@ -54,6 +54,7 @@ async function withGallery(row: Project): Promise<ProjectDTO> {
   };
 }
 
+/** All projects including archived — for admin. */
 export async function listProjects() {
   const db = await ensureDb();
   const rows = await db.select().from(projects).orderBy(asc(projects.title));
@@ -65,7 +66,7 @@ export async function listFeaturedProjects() {
   const rows = await db
     .select()
     .from(projects)
-    .where(eq(projects.featured, true))
+    .where(and(eq(projects.featured, true), eq(projects.archived, false)))
     .orderBy(asc(projects.featuredOrder));
   return Promise.all(rows.map(withGallery));
 }
@@ -77,7 +78,7 @@ export async function listProjectsByCategory(
   const rows = await db
     .select()
     .from(projects)
-    .where(eq(projects.category, category))
+    .where(and(eq(projects.category, category), eq(projects.archived, false)))
     .orderBy(asc(projects.portfolioOrder), asc(projects.title));
   return Promise.all(rows.map(withGallery));
 }
@@ -85,8 +86,9 @@ export async function listProjectsByCategory(
 export async function getProjectBySlug(slug: string) {
   const db = await ensureDb();
   const rows = await db.select().from(projects).where(eq(projects.slug, slug)).limit(1);
-  if (!rows[0]) return null;
-  return withGallery(rows[0]);
+  const row = rows[0];
+  if (!row || row.archived) return null;
+  return withGallery(row);
 }
 
 export async function getSitePage(key: string) {

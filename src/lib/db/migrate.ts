@@ -26,6 +26,7 @@ export async function migrate() {
       featured INTEGER NOT NULL DEFAULT 0,
       featured_order INTEGER,
       featured_layout TEXT NOT NULL DEFAULT 'left',
+      archived INTEGER NOT NULL DEFAULT 0,
       portfolio_order INTEGER NOT NULL DEFAULT 0,
       year INTEGER,
       client TEXT,
@@ -76,6 +77,7 @@ export async function migrate() {
   // Additive columns for existing DBs
   for (const sql of [
     `ALTER TABLE projects ADD COLUMN portfolio_cover TEXT`,
+    `ALTER TABLE projects ADD COLUMN archived INTEGER NOT NULL DEFAULT 0`,
   ]) {
     try {
       await client.execute(sql);

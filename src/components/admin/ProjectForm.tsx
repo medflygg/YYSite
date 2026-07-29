@@ -13,6 +13,7 @@ type Project = {
   featured: boolean;
   featuredOrder: number | null;
   featuredLayout: 'left' | 'right';
+  archived: boolean;
   portfolioOrder: number;
   year: number | null;
   client: string;
@@ -36,6 +37,7 @@ const empty: Project = {
   featured: false,
   featuredOrder: null,
   featuredLayout: 'left',
+  archived: false,
   portfolioOrder: 0,
   year: null,
   client: '',
@@ -89,12 +91,15 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
     setSaving(true);
     setError('');
     try {
+      const payload = form.archived
+        ? { ...form, featured: false, featuredOrder: null }
+        : form;
       const res = await fetch(
         isNew ? '/api/redactingpages/projects' : `/api/redactingpages/projects/${projectId}`,
         {
           method: isNew ? 'POST' : 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         },
       );
       const data = await res.json();
@@ -105,6 +110,26 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function onDelete() {
+    if (!projectId) return;
+    if (
+      !confirm(
+        `Полностью удалить «${form.title || 'проект'}»?\nБудут удалены запись и папка uploads/${form.slug || ''}.`,
+      )
+    ) {
+      return;
+    }
+    if (!confirm('Точно удалить? Это нельзя отменить.')) return;
+    const res = await fetch(`/api/redactingpages/projects/${projectId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      alert('Не удалось удалить');
+      return;
+    }
+    window.location.href = '/redactingpages/projects';
   }
 
   return (
@@ -142,12 +167,34 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
         <label className="flex items-center gap-2 lowercase">
           <input
             type="checkbox"
+            checked={form.archived}
+            onChange={(e) => {
+              const archived = e.target.checked;
+              setForm((prev) => ({
+                ...prev,
+                archived,
+                ...(archived
+                  ? { featured: false, featuredOrder: null }
+                  : null),
+              }));
+            }}
+          />
+          в архиве (скрыт с сайта)
+        </label>
+        <label
+          className={`flex items-center gap-2 lowercase ${
+            form.archived ? 'opacity-40' : ''
+          }`}
+        >
+          <input
+            type="checkbox"
             checked={form.featured}
+            disabled={form.archived}
             onChange={(e) => set('featured', e.target.checked)}
           />
           на главной (избранное)
         </label>
-        {form.featured ? (
+        {form.featured && !form.archived ? (
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="порядок на главной">
               <input
@@ -302,13 +349,24 @@ export default function ProjectForm({ projectId }: { projectId?: number }) {
         </Field>
 
         {error ? <p className="text-red-700">{error}</p> : null}
-        <button
-          type="submit"
-          disabled={saving}
-          className="bg-yy-yellow px-6 py-3 lowercase disabled:opacity-50"
-        >
-          {saving ? 'сохраняю...' : 'сохранить'}
-        </button>
+        <div className="flex flex-wrap items-center gap-4">
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-yy-yellow px-6 py-3 lowercase disabled:opacity-50"
+          >
+            {saving ? 'сохраняю...' : 'сохранить'}
+          </button>
+          {!isNew ? (
+            <button
+              type="button"
+              onClick={() => void onDelete()}
+              className="px-2 py-3 lowercase text-red-800/80 hover:text-red-900"
+            >
+              удалить навсегда
+            </button>
+          ) : null}
+        </div>
       </form>
       <style>{`
         .field {

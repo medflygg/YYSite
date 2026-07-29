@@ -16,6 +16,7 @@ type Item = {
   category: 'books' | 'magazines' | 'other';
   featured: boolean;
   featuredLayout: 'left' | 'right';
+  archived?: boolean;
   awards: Award[];
 };
 
@@ -176,12 +177,13 @@ export default function ShowcaseEditor() {
 
   const pickerCandidates = useMemo(() => {
     if (!data || !picker) return [];
+    const live = all.filter((p) => !p.archived);
     if (picker.mode === 'featured') {
       const ids = new Set(data.featured.map((p) => p.id));
-      return all.filter((p) => !ids.has(p.id));
+      return live.filter((p) => !ids.has(p.id));
     }
     const ids = new Set(data[picker.mode].map((p) => p.id));
-    return all.filter((p) => !ids.has(p.id));
+    return live.filter((p) => !ids.has(p.id));
   }, [all, data, picker]);
 
   if (!data) {
